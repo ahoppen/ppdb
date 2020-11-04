@@ -6,8 +6,12 @@ public enum DebuggerCommand {
   case stepIntoFalse
 }
 
-public struct ExecutionHistory {
+public struct ExecutionHistory: ExpressibleByArrayLiteral {
   public let history: [DebuggerCommand]
+  
+  public init(arrayLiteral elements: DebuggerCommand...) {
+    history = elements
+  }
   
   public init(history: [DebuggerCommand]) {
     self.history = history

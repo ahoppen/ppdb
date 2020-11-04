@@ -1,69 +1,23 @@
 import AST
 
-public struct InferenceResult: Equatable {
-  public let wpf: Term
-  
-  public init(wpf: Term) {
-    self.wpf = wpf
-  }
-  
-  fileprivate func transform(transformation: (Term) -> Term) -> InferenceResult {
-    return InferenceResult(
-      wpf: transformation(wpf)
-    )
-  }
-}
-
-fileprivate extension Expr {
-  var Term: Term {
-    switch self {
-    case let expr as BinaryOperatorExpr:
-      let lhsTerm = expr.lhs.Term
-      let rhsTerm = expr.rhs.Term
-      switch expr.operator {
-      case .plus:
-        return .add(lhs: lhsTerm, rhs: rhsTerm)
-      case .minus:
-        return .sub(lhs: lhsTerm, rhs: rhsTerm)
-      case .equal:
-        return .equal(lhs: lhsTerm, rhs: rhsTerm)
-      case .lessThan:
-        return .lessThan(lhs: lhsTerm, rhs: rhsTerm)
-      }
-    case let expr as IntegerLiteralExpr:
-      return .number(Double(expr.value))
-    case let expr as FloatLiteralExpr:
-      return .number(expr.value)
-    case let expr as BoolLiteralExpr:
-      return .bool(expr.value)
-    case let expr as VariableReferenceExpr:
-      return .variable(expr.variable.resolved!)
-    case let expr as ParenExpr:
-      return expr.subExpr.Term
-    default:
-      fatalError("Unknown Expr type")
-    }
-  }
-}
-
 public enum InferenceEngine {
   public static func infer(stmt: Stmt, f: Term) -> InferenceResult {
     return infer(stmt: stmt, previousResult: InferenceResult(wpf: f))
   }
   
-  private static func infer(stmt: Stmt, previousResult: InferenceResult) -> InferenceResult {
+  internal static func infer(stmt: Stmt, previousResult: InferenceResult) -> InferenceResult {
     switch stmt {
     case let stmt as VariableDeclStmt:
       return previousResult.transform(transformation: {
-        $0.replacing(variable: stmt.variable, with: stmt.expr.Term) ?? $0
+        $0.replacing(variable: stmt.variable, with: stmt.expr.term) ?? $0
       })
     case let stmt as AssignStmt:
       return previousResult.transform(transformation: {
-        $0.replacing(variable: stmt.variable.resolved!, with: stmt.expr.Term) ?? $0
+        $0.replacing(variable: stmt.variable.resolved!, with: stmt.expr.term) ?? $0
       })
     case let stmt as ObserveStmt:
       return previousResult.transform(transformation: {
-        return .iverson(stmt.condition.Term) * $0
+        return Term.iverson(stmt.condition.term).simplified * $0
       })
     case let codeBlock as CodeBlockStmt:
       var intermediateResult = previousResult
@@ -85,7 +39,7 @@ public enum InferenceEngine {
       } else {
         elseInferenceResult = previousResult
       }
-      let condition = stmt.condition.Term
+      let condition = stmt.condition.term
       return InferenceResult(
         wpf: .iverson(condition) * ifInferenceResult.wpf + .iverson(.not(condition)) * elseInferenceResult.wpf
       )
@@ -97,16 +51,16 @@ public enum InferenceEngine {
       } else {
         elseInferenceResult = previousResult
       }
-      let condition = stmt.condition.Term
+      let condition = stmt.condition.term
       return InferenceResult(
         wpf: condition * ifInferenceResult.wpf + (.number(1) - condition) * elseInferenceResult.wpf
       )
     case let stmt as WhileStmt:
       let loopIterationBound = 10 // FIXME: Dynamic loop iteration bounds
       var intermediateResult = InferenceResult(
-        wpf: Term.iverson(Term.not(stmt.condition.Term).simplified).simplified * previousResult.wpf
+        wpf: Term.iverson(Term.not(stmt.condition.term).simplified).simplified * previousResult.wpf
       )
-      let condition = stmt.condition.Term
+      let condition = stmt.condition.term
       for _ in 0..<loopIterationBound {
         let bodyInferenceResult = infer(stmt: stmt.body, previousResult: intermediateResult)
         intermediateResult = InferenceResult(

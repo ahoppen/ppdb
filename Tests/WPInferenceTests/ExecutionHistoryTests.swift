@@ -11,7 +11,7 @@ fileprivate extension SourceRange {
   }
 }
 
-class FooExecutionHistoryTests: XCTestCase {
+class ExecutionHistoryTests: XCTestCase {
   private func parse(_ sourceCode: String) throws -> TopLevelCodeStmt {
     let parser = Parser(sourceCode: sourceCode)
     let ast = try parser.parseFile()

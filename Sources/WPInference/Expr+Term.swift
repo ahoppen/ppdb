@@ -8,9 +8,9 @@ internal extension Expr {
       let rhsTerm = expr.rhs.term
       switch expr.operator {
       case .plus:
-        return .add(lhs: lhsTerm, rhs: rhsTerm)
+        return lhsTerm + rhsTerm
       case .minus:
-        return .sub(lhs: lhsTerm, rhs: rhsTerm)
+        return lhsTerm - rhsTerm
       case .equal:
         return .equal(lhs: lhsTerm, rhs: rhsTerm)
       case .lessThan:

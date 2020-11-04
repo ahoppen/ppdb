@@ -14,7 +14,7 @@ public enum HistoryInferenceEngine {
         
       case (.stepIntoTrue, let stmt as IfStmt):
         intermediateResult = intermediateResult.transformAllComponents(transformation: {
-          return Term.iverson(stmt.condition.term).simplified * $0
+          return Term.iverson(stmt.condition.term) * $0
         })
       case (.stepIntoTrue, let stmt as ProbStmt):
         intermediateResult = intermediateResult.transformAllComponents(transformation: {
@@ -22,14 +22,14 @@ public enum HistoryInferenceEngine {
         })
       case (.stepIntoTrue, let stmt as WhileStmt):
         intermediateResult = intermediateResult.transformAllComponents(transformation: {
-          return Term.iverson(stmt.condition.term).simplified * $0
+          return Term.iverson(stmt.condition.term) * $0
         })
       case (.stepIntoTrue, _):
         intermediateResult = InferenceEngine.infer(stmt: stmt, previousResult: intermediateResult)
         
       case (.stepIntoFalse, let stmt as IfStmt):
         intermediateResult = intermediateResult.transformAllComponents(transformation: {
-          return Term.iverson(Term.not(stmt.condition.term).simplified).simplified * $0
+          return Term.iverson(Term.not(stmt.condition.term)) * $0
         })
       case (.stepIntoFalse, let stmt as ProbStmt):
         intermediateResult = intermediateResult.transformAllComponents(transformation: {
@@ -37,7 +37,7 @@ public enum HistoryInferenceEngine {
         })
       case (.stepIntoFalse, let stmt as WhileStmt):
         intermediateResult = intermediateResult.transformAllComponents(transformation: {
-          return Term.iverson(Term.not(stmt.condition.term).simplified).simplified * $0
+          return Term.iverson(Term.not(stmt.condition.term)) * $0
         })
       case (.stepIntoFalse, _):
         intermediateResult = InferenceEngine.infer(stmt: stmt, previousResult: intermediateResult)

@@ -36,7 +36,7 @@ fileprivate extension SourceRange {
 
 fileprivate extension Term {
   static func probability(of variable: SourceVariable, being term: Term) -> Term {
-    return Term.iverson(Term.equal(lhs: .variable(variable), rhs: term).simplified).simplified
+    return Term.iverson(Term.equal(lhs: .variable(variable), rhs: term))
   }
 }
 

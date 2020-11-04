@@ -52,6 +52,13 @@ let package = Package(
       name: "Utils",
       dependencies: []
     ),
+    .target(
+      name: "WPInference",
+      dependencies: [
+        "AST",
+        "Utils",
+      ]
+    ),
     
     // MARK: - Test targets
     
@@ -88,6 +95,16 @@ let package = Package(
         "Parser",
         "TypeChecker",
         "TestUtils",
+      ]
+    ),
+    .testTarget(
+      name: "WPInferenceTests",
+      dependencies: [
+        "AST",
+        "Parser",
+        "TypeChecker",
+        "TestUtils",
+        "WPInference",
       ]
     ),
   ]

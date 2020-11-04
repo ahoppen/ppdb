@@ -25,6 +25,13 @@ let package = Package(
       ]
     ),
     .target(
+      name: "Execution",
+      dependencies: [
+        "AST",
+        "Utils",
+      ]
+    ),
+    .target(
       name: "Parser",
       dependencies: [
         "AST"
@@ -55,6 +62,17 @@ let package = Package(
         "TestUtils",
       ]
     ),
+    .testTarget(
+      name: "ExecutionTests",
+      dependencies: [
+        "Execution",
+        "AST",
+        "Parser",
+        "TypeChecker",
+        "TestUtils",
+      ]
+    ),
+    
     .testTarget(
       name: "ParserTests",
       dependencies: [

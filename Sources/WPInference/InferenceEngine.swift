@@ -2,21 +2,21 @@ import AST
 
 public enum InferenceEngine {
   public static func infer(stmt: Stmt, f: Term) -> InferenceResult {
-    return infer(stmt: stmt, previousResult: InferenceResult(wpf: f))
+    return infer(stmt: stmt, previousResult: .initial(f: f))
   }
   
   internal static func infer(stmt: Stmt, previousResult: InferenceResult) -> InferenceResult {
     switch stmt {
     case let stmt as VariableDeclStmt:
-      return previousResult.transform(transformation: {
+      return previousResult.transformAllComponents(transformation: {
         $0.replacing(variable: stmt.variable, with: stmt.expr.term) ?? $0
       })
     case let stmt as AssignStmt:
-      return previousResult.transform(transformation: {
+      return previousResult.transformAllComponents(transformation: {
         $0.replacing(variable: stmt.variable.resolved!, with: stmt.expr.term) ?? $0
       })
     case let stmt as ObserveStmt:
-      return previousResult.transform(transformation: {
+      return previousResult.transformAllComponents(transformation: {
         return Term.iverson(stmt.condition.term).simplified * $0
       })
     case let codeBlock as CodeBlockStmt:
@@ -40,8 +40,11 @@ public enum InferenceEngine {
         elseInferenceResult = previousResult
       }
       let condition = stmt.condition.term
-      return InferenceResult(
-        wpf: .iverson(condition) * ifInferenceResult.wpf + .iverson(.not(condition)) * elseInferenceResult.wpf
+      return .combining(
+        lhsMultiplier: .iverson(condition),
+        lhs: ifInferenceResult,
+        rhsMultiplier: Term.iverson(Term.not(condition).simplified).simplified,
+        rhs: elseInferenceResult
       )
     case let stmt as ProbStmt:
       let ifInferenceResult = infer(stmt: stmt.ifBody, previousResult: previousResult)
@@ -52,19 +55,27 @@ public enum InferenceEngine {
         elseInferenceResult = previousResult
       }
       let condition = stmt.condition.term
-      return InferenceResult(
-        wpf: condition * ifInferenceResult.wpf + (.number(1) - condition) * elseInferenceResult.wpf
+      return .combining(
+        lhsMultiplier: condition,
+        lhs: ifInferenceResult,
+        rhsMultiplier: (.number(1) - condition),
+        rhs: elseInferenceResult
       )
     case let stmt as WhileStmt:
       let loopIterationBound = 10 // FIXME: Dynamic loop iteration bounds
-      var intermediateResult = InferenceResult(
-        wpf: Term.iverson(Term.not(stmt.condition.term).simplified).simplified * previousResult.wpf
-      )
+      var intermediateResult = previousResult.transform(wpTransformation: {
+        Term.iverson(Term.not(stmt.condition.term).simplified).simplified * $0
+      }, wlpTransformation: {
+        Term.iverson(stmt.condition.term).simplified + Term.iverson(Term.not(stmt.condition.term).simplified).simplified * $0
+      })
       let condition = stmt.condition.term
       for _ in 0..<loopIterationBound {
         let bodyInferenceResult = infer(stmt: stmt.body, previousResult: intermediateResult)
-        intermediateResult = InferenceResult(
-          wpf: Term.iverson(condition).simplified * bodyInferenceResult.wpf + Term.iverson(Term.not(condition).simplified).simplified * intermediateResult.wpf
+        intermediateResult = .combining(
+          lhsMultiplier: Term.iverson(condition).simplified,
+          lhs: bodyInferenceResult,
+          rhsMultiplier: Term.iverson(Term.not(condition).simplified).simplified,
+          rhs: intermediateResult
         )
       }
       return intermediateResult

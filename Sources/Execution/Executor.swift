@@ -43,12 +43,6 @@ fileprivate extension Sample {
 }
 
 public class Executor {
-  public static func execute(stmts: [Stmt], numSamples: Int) -> [Sample] {
-    assert(!stmts.isEmpty)
-    let codeBlockStmt = CodeBlockStmt(body: stmts, range: stmts.first!.range.lowerBound..<stmts.last!.range.upperBound)
-    return Executor.execute(stmt: codeBlockStmt, numSamples: numSamples)
-  }
-  
   public static func execute(stmt: Stmt, numSamples: Int) -> [Sample] {
     let samples = Array(repeating: Sample.empty, count: numSamples)
     return Executor.execute(stmt: stmt, samples: samples)
@@ -76,6 +70,12 @@ public class Executor {
     case let stmt as CodeBlockStmt:
       var samples = samples
       for subStmt in stmt.body {
+        samples = Executor.execute(stmt: subStmt, samples: samples)
+      }
+      return samples
+    case let stmt as TopLevelCodeStmt:
+      var samples = samples
+      for subStmt in stmt.stmts {
         samples = Executor.execute(stmt: subStmt, samples: samples)
       }
       return samples

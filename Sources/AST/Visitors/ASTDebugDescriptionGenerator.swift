@@ -64,6 +64,13 @@ internal struct ASTDebugDescriptionGenerator: ASTVisitor {
       """
   }
   
+  func visit(_ stmt: TopLevelCodeStmt) -> String {
+    return """
+      ▽ TopLevelCodeStmt
+      \(stmt.stmts.map(\.debugDescription).joined(separator: "\n").indented())
+      """
+  }
+  
   func visit(_ stmt: IfStmt) -> String {
     return """
       ▽ IfStmt

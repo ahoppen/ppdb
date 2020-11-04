@@ -75,6 +75,17 @@ public struct CodeBlockStmt: Stmt {
   }
 }
 
+public struct TopLevelCodeStmt: Stmt {
+  public let stmts: [Stmt]
+  
+  public let range: SourceRange
+  
+  public init(stmts: [Stmt], range: SourceRange) {
+    self.stmts = stmts
+    self.range = range
+  }
+}
+
 public struct IfStmt: Stmt {
   public let condition: Expr
   public let ifBody: CodeBlockStmt
@@ -176,6 +187,20 @@ public extension CodeBlockStmt {
   }
 }
 
+public extension TopLevelCodeStmt {
+  func accept<VisitorType: ASTVisitor>(_ visitor: VisitorType) -> VisitorType.StmtReturnType {
+    visitor.visit(self)
+  }
+  
+  func accept<VisitorType: ASTVerifier>(_ visitor: VisitorType) throws -> VisitorType.StmtReturnType {
+    try visitor.visit(self)
+  }
+  
+  func accept<VisitorType: ASTRewriter>(_ visitor: VisitorType) throws -> Self {
+    return try visitor.visit(self)
+  }
+}
+
 public extension IfStmt {
   func accept<VisitorType: ASTVisitor>(_ visitor: VisitorType) -> VisitorType.StmtReturnType {
     visitor.visit(self)
@@ -259,6 +284,20 @@ extension CodeBlockStmt {
       return false
     }
     return zip(self.body, other.body).allSatisfy({
+      $0.0.equalsIgnoringRange(other: $0.1)
+    })
+  }
+}
+
+extension TopLevelCodeStmt {
+  public func equalsIgnoringRange(other: ASTNode) -> Bool {
+    guard let other = other as? TopLevelCodeStmt else {
+      return false
+    }
+    if self.stmts.count != other.stmts.count {
+      return false
+    }
+    return zip(self.stmts, other.stmts).allSatisfy({
       $0.0.equalsIgnoringRange(other: $0.1)
     })
   }

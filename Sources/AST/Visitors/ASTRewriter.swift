@@ -11,6 +11,7 @@ public protocol ASTRewriter {
   func visit(_ stmt: AssignStmt) throws -> AssignStmt
   func visit(_ stmt: ObserveStmt) throws -> ObserveStmt
   func visit(_ stmt: CodeBlockStmt) throws -> CodeBlockStmt
+  func visit(_ stmt: TopLevelCodeStmt) throws -> TopLevelCodeStmt
   func visit(_ stmt: IfStmt) throws -> IfStmt
   func visit(_ stmt: ProbStmt) throws -> ProbStmt
   func visit(_ stmt: WhileStmt) throws -> WhileStmt
@@ -65,6 +66,11 @@ public extension ASTRewriter {
   func visit(_ stmt: CodeBlockStmt) throws -> CodeBlockStmt {
     return CodeBlockStmt(body: try stmt.body.map( { try $0.accept(self) }),
                          range: stmt.range)
+  }
+  
+  func visit(_ stmt: TopLevelCodeStmt) throws -> TopLevelCodeStmt {
+    return TopLevelCodeStmt(stmts: try stmt.stmts.map( { try $0.accept(self) }),
+                            range: stmt.range)
   }
   
   func visit(_ stmt: IfStmt) throws -> IfStmt {

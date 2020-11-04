@@ -18,6 +18,7 @@ public protocol ASTVerifier {
   func visit(_ stmt: AssignStmt) throws -> StmtReturnType
   func visit(_ stmt: ObserveStmt) throws -> StmtReturnType
   func visit(_ stmt: CodeBlockStmt) throws -> StmtReturnType
+  func visit(_ stmt: TopLevelCodeStmt) throws -> StmtReturnType
   func visit(_ stmt: IfStmt) throws -> StmtReturnType
   func visit(_ stmt: ProbStmt) throws -> StmtReturnType
   func visit(_ stmt: WhileStmt) throws -> StmtReturnType
@@ -54,6 +55,12 @@ public extension ASTVerifier where ExprReturnType == Void, StmtReturnType == Voi
   
   func visit(_ codeBlock: CodeBlockStmt) throws {
     for stmt in codeBlock.body {
+      try stmt.accept(self)
+    }
+  }
+  
+  func visit(_ topLevelCode: TopLevelCodeStmt) throws {
+    for stmt in topLevelCode.stmts {
       try stmt.accept(self)
     }
   }

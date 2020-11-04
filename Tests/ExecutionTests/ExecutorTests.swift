@@ -7,10 +7,10 @@ import TestUtils
 import XCTest
 
 class ExecutorTests: XCTestCase {
-  private func parse(_ sourceCode: String) throws -> [Stmt] {
+  private func parse(_ sourceCode: String) throws -> Stmt {
     let parser = Parser(sourceCode: sourceCode)
-    let stmts = try parser.parseFile()
-    return try TypeCheckPipeline.typeCheck(stmts: stmts)
+    let ast = try parser.parseFile()
+    return try TypeCheckPipeline.typeCheck(stmt: ast)
   }
   
   func testExecuteSingleStatementProgram() {
@@ -19,9 +19,9 @@ class ExecutorTests: XCTestCase {
         int x = 5
         """
       
-      let stmts = try parse(source)
+      let ast = try parse(source)
       
-      let samples = Executor.execute(stmts: stmts, numSamples: 1)
+      let samples = Executor.execute(stmt: ast, numSamples: 1)
       XCTAssert(samples.count == 1)
       let sample = samples.first!
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
@@ -37,9 +37,9 @@ class ExecutorTests: XCTestCase {
         int z = x + y
         """
       
-      let stmts = try parse(source)
+      let ast = try parse(source)
       
-      let samples = Executor.execute(stmts: stmts, numSamples: 1)
+      let samples = Executor.execute(stmt: ast, numSamples: 1)
       XCTAssert(samples.count == 1)
       let sample = samples.first!
       let varX = SourceVariable(name: "z", disambiguationIndex: 1, type: .int)
@@ -56,9 +56,9 @@ class ExecutorTests: XCTestCase {
         }
         """
       
-      let stmts = try parse(source)
+      let ast = try parse(source)
       
-      let samples = Executor.execute(stmts: stmts, numSamples: 1000)
+      let samples = Executor.execute(stmt: ast, numSamples: 1000)
       XCTAssert(samples.count == 1000)
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       let varXValue = samples.map({ $0.values[varX]!.integer! }).average
@@ -78,9 +78,9 @@ class ExecutorTests: XCTestCase {
         }
         """
       
-      let stmts = try parse(source)
+      let ast = try parse(source)
       
-      let samples = Executor.execute(stmts: stmts, numSamples: 1000)
+      let samples = Executor.execute(stmt: ast, numSamples: 1000)
       XCTAssert(samples.count == 1000)
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       let varXValue = samples.map({ $0.values[varX]!.integer! }).average
@@ -97,9 +97,9 @@ class ExecutorTests: XCTestCase {
         }
         """
       
-      let stmts = try parse(source)
+      let ast = try parse(source)
       
-      let samples = Executor.execute(stmts: stmts, numSamples: 1)
+      let samples = Executor.execute(stmt: ast, numSamples: 1)
       XCTAssert(samples.count == 1)
       let sample = samples.first!
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
@@ -120,9 +120,9 @@ class ExecutorTests: XCTestCase {
         }
         """
       
-      let stmts = try parse(source)
+      let ast = try parse(source)
       
-      let samples = Executor.execute(stmts: stmts, numSamples: 1000)
+      let samples = Executor.execute(stmt: ast, numSamples: 1000)
       XCTAssertEqual(samples.count, 1000)
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       let varXValue = samples.map({ $0.values[varX]!.integer! }).average

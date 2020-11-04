@@ -13,37 +13,37 @@ class TypeCheckerTests: XCTestCase {
       }
       observe(x == 0)
       """
-    let unresolvedStmts = try! Parser(sourceCode: sourceCode).parseFile()
-    let resolvedStmts = try! VariableResolver().resolveVariables(in: unresolvedStmts)
-    XCTAssertNoThrow(try TypeChecker().typeCheck(stmts: resolvedStmts))
+    let unresolvedAst = try! Parser(sourceCode: sourceCode).parseFile()
+    let resolvedAst = try! VariableResolver().resolveVariables(in: unresolvedAst)
+    XCTAssertNoThrow(try TypeChecker().typeCheck(stmt: resolvedAst))
   }
   
   func testIfConditionCannotBeInt() {
     let sourceCode = "if 1 {}"
-    let unresolvedStmts = try! Parser(sourceCode: sourceCode).parseFile()
-    let resolvedStmts = try! VariableResolver().resolveVariables(in: unresolvedStmts)
-    XCTAssertThrowsError(try TypeChecker().typeCheck(stmts: resolvedStmts))
+    let unresolvedAst = try! Parser(sourceCode: sourceCode).parseFile()
+    let resolvedAst = try! VariableResolver().resolveVariables(in: unresolvedAst)
+    XCTAssertThrowsError(try TypeChecker().typeCheck(stmt: resolvedAst))
   }
   
   func testWhileConditionCannotBeInt() {
     let sourceCode = "while 1 {}"
-    let unresolvedStmts = try! Parser(sourceCode: sourceCode).parseFile()
-    let resolvedStmts = try! VariableResolver().resolveVariables(in: unresolvedStmts)
-    XCTAssertThrowsError(try TypeChecker().typeCheck(stmts: resolvedStmts))
+    let unresolvedAst = try! Parser(sourceCode: sourceCode).parseFile()
+    let resolvedAst = try! VariableResolver().resolveVariables(in: unresolvedAst)
+    XCTAssertThrowsError(try TypeChecker().typeCheck(stmt: resolvedAst))
   }
   
   func testObserverConditionCannotBeInt() {
     let sourceCode = "observe 1"
-    let unresolvedStmts = try! Parser(sourceCode: sourceCode).parseFile()
-    let resolvedStmts = try! VariableResolver().resolveVariables(in: unresolvedStmts)
-    XCTAssertThrowsError(try TypeChecker().typeCheck(stmts: resolvedStmts))
+    let unresolvedAst = try! Parser(sourceCode: sourceCode).parseFile()
+    let resolvedAst = try! VariableResolver().resolveVariables(in: unresolvedAst)
+    XCTAssertThrowsError(try TypeChecker().typeCheck(stmt: resolvedAst))
   }
   
   func testCannotDeclareIntVariableWithBoolValue() {
     let sourceCode = "int x = 1 < 2"
-    let unresolvedStmts = try! Parser(sourceCode: sourceCode).parseFile()
-    let resolvedStmts = try! VariableResolver().resolveVariables(in: unresolvedStmts)
-    XCTAssertThrowsError(try TypeChecker().typeCheck(stmts: resolvedStmts))
+    let unresolvedAst = try! Parser(sourceCode: sourceCode).parseFile()
+    let resolvedAst = try! VariableResolver().resolveVariables(in: unresolvedAst)
+    XCTAssertThrowsError(try TypeChecker().typeCheck(stmt: resolvedAst))
   }
   
   func testCannotAssignBoolToIntVariable() {
@@ -51,9 +51,9 @@ class TypeCheckerTests: XCTestCase {
       int x = 1
       x = 1 < 2
       """
-    let unresolvedStmts = try! Parser(sourceCode: sourceCode).parseFile()
-    let resolvedStmts = try! VariableResolver().resolveVariables(in: unresolvedStmts)
-    XCTAssertThrowsError(try TypeChecker().typeCheck(stmts: resolvedStmts))
+    let unresolvedAst = try! Parser(sourceCode: sourceCode).parseFile()
+    let resolvedAst = try! VariableResolver().resolveVariables(in: unresolvedAst)
+    XCTAssertThrowsError(try TypeChecker().typeCheck(stmt: resolvedAst))
   }
   
   func testTypeCheckerVisitsLoopBody() {
@@ -62,8 +62,8 @@ class TypeCheckerTests: XCTestCase {
         bool a = 2
       }
       """
-    let unresolvedStmts = try! Parser(sourceCode: sourceCode).parseFile()
-    let resolvedStmts = try! VariableResolver().resolveVariables(in: unresolvedStmts)
-    XCTAssertThrowsError(try TypeChecker().typeCheck(stmts: resolvedStmts))
+    let unresolvedAst = try! Parser(sourceCode: sourceCode).parseFile()
+    let resolvedAst = try! VariableResolver().resolveVariables(in: unresolvedAst)
+    XCTAssertThrowsError(try TypeChecker().typeCheck(stmt: resolvedAst))
   }
 }

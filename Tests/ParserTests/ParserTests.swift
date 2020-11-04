@@ -309,9 +309,9 @@ class ParserTests: XCTestCase {
                               elseBody: nil,
                               range: .whatever
       )
-      let stmts: [Stmt] = [aDecl, probStmt]
+      let expected = TopLevelCodeStmt(stmts: [aDecl, probStmt], range: .whatever)
       
-      XCTAssertEqualASTIgnoringRanges(ast, stmts)
+      XCTAssertEqualASTIgnoringRanges(ast, expected)
     }())
   }
   
@@ -346,9 +346,9 @@ class ParserTests: XCTestCase {
                               elseBody: CodeBlockStmt(body: [aAssignmentTo2], range: .whatever),
                               range: .whatever
       )
-      let stmts: [Stmt] = [aDecl, probStmt]
+      let expected = TopLevelCodeStmt(stmts: [aDecl, probStmt], range: .whatever)
       
-      XCTAssertEqualASTIgnoringRanges(ast, stmts)
+      XCTAssertEqualASTIgnoringRanges(ast, expected)
     }())
   }
   
@@ -381,9 +381,9 @@ class ParserTests: XCTestCase {
                                                 range: .whatever)
       let observeStmt = ObserveStmt(condition: observeCondition, range: .whatever)
 
-      let stmts: [Stmt] = [aDecl, bDecl, cDecl, observeStmt]
+      let expected = TopLevelCodeStmt(stmts: [aDecl, bDecl, cDecl, observeStmt], range: .whatever)
 
-      XCTAssertEqualASTIgnoringRanges(ast, stmts)
+      XCTAssertEqualASTIgnoringRanges(ast, expected)
     }())
   }
 
@@ -417,9 +417,9 @@ class ParserTests: XCTestCase {
       let observeStmt = ObserveStmt(condition: ParenExpr(subExpr: observeCondition, range: .whatever),
                                     range: .whatever)
 
-      let stmts: [Stmt] = [aDecl, bDecl, cDecl, observeStmt]
+      let expected = TopLevelCodeStmt(stmts: [aDecl, bDecl, cDecl, observeStmt], range: .whatever)
 
-      XCTAssertEqualASTIgnoringRanges(ast, stmts)
+      XCTAssertEqualASTIgnoringRanges(ast, expected)
     }())
   }
   
@@ -436,9 +436,9 @@ class ParserTests: XCTestCase {
                                    expr: boolLiteralExpr,
                                    range: .whatever)
       
-      let stmts: [Stmt] = [decl]
+      let expected = TopLevelCodeStmt(stmts: [decl], range: .whatever)
       
-      XCTAssertEqualASTIgnoringRanges(ast, stmts)
+      XCTAssertEqualASTIgnoringRanges(ast, expected)
     }())
   }
   
@@ -473,9 +473,9 @@ class ParserTests: XCTestCase {
         range: .whatever
       )
       
-      let stmts: [Stmt] = [xDecl, ifStmt]
+      let expected = TopLevelCodeStmt(stmts: [xDecl, ifStmt], range: .whatever)
       
-      XCTAssertEqualASTIgnoringRanges(ast, stmts)
+      XCTAssertEqualASTIgnoringRanges(ast, expected)
     }())
   }
 }

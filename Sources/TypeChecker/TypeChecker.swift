@@ -6,10 +6,8 @@ internal class TypeChecker: ASTVerifier {
   typealias ExprReturnType = Type
   typealias StmtReturnType = Void
   
-  func typeCheck(stmts: [Stmt]) throws {
-    for stmt in stmts {
-      _ = try stmt.accept(self)
-    }
+  func typeCheck(stmt: Stmt) throws {
+    _ = try stmt.accept(self)
   }
   
   // MARK: - AST visitation
@@ -76,6 +74,12 @@ internal class TypeChecker: ASTVerifier {
   
   func visit(_ codeBlock: CodeBlockStmt) throws {
     for stmt in codeBlock.body {
+      _ = try stmt.accept(self)
+    }
+  }
+  
+  func visit(_ codeBlock: TopLevelCodeStmt) throws {
+    for stmt in codeBlock.stmts {
       _ = try stmt.accept(self)
     }
   }

@@ -68,7 +68,7 @@ public class Parser {
   
   // MARK: - Parse the entire file
   
-  public func parseFile() throws -> [Stmt] {
+  public func parseFile() throws -> TopLevelCodeStmt {
     var stmts = [Stmt]()
     while true {
       guard let stmt = try parseStmt() else {
@@ -79,7 +79,7 @@ public class Parser {
     if stmts.isEmpty {
       throw CompilerError(location: lexer.endLocation, message: "Source file is empty")
     }
-    return stmts
+    return TopLevelCodeStmt(stmts: stmts, range: stmts.first!.range.lowerBound..<stmts.last!.range.upperBound)
   }
   
   // MARK: - Retrieving tokens

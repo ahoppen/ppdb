@@ -36,8 +36,8 @@ fileprivate class VariableScope {
 internal class VariableResolver: ASTRewriter {
   private var variableScope = VariableScope(outerScope: nil)
   
-  public func resolveVariables(in stmts: [Stmt]) throws -> [Stmt] {
-    return try stmts.map({ try $0.accept(self) })
+  public func resolveVariables(in stmts: Stmt) throws -> Stmt {
+    return try stmts.accept(self)
   }
   
   // MARK: - Handle scopes

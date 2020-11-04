@@ -47,12 +47,6 @@ fileprivate extension Expr {
 }
 
 public enum InferenceEngine {
-  public static func infer(stmts: [Stmt], f: Term) -> InferenceResult {
-    assert(!stmts.isEmpty)
-    let codeBlockStmt = CodeBlockStmt(body: stmts, range: stmts.first!.range.lowerBound..<stmts.last!.range.upperBound)
-    return infer(stmt: codeBlockStmt, f: f)
-  }
-  
   public static func infer(stmt: Stmt, f: Term) -> InferenceResult {
     return infer(stmt: stmt, previousResult: InferenceResult(wpf: f))
   }
@@ -74,6 +68,12 @@ public enum InferenceEngine {
     case let codeBlock as CodeBlockStmt:
       var intermediateResult = previousResult
       for stmt in codeBlock.body.reversed() {
+        intermediateResult = infer(stmt: stmt, previousResult: intermediateResult)
+      }
+      return intermediateResult
+    case let codeBlock as TopLevelCodeStmt:
+      var intermediateResult = previousResult
+      for stmt in codeBlock.stmts.reversed() {
         intermediateResult = infer(stmt: stmt, previousResult: intermediateResult)
       }
       return intermediateResult
@@ -121,7 +121,7 @@ public enum InferenceEngine {
 }
 
 extension InferenceEngine {
-  public static func inferProbability(of variable: SourceVariable, being value: Term, stmts: [Stmt]) -> InferenceResult {
-    return infer(stmts: stmts, f: .iverson(.equal(lhs: .variable(variable), rhs: value)))
+  public static func inferProbability(of variable: SourceVariable, being value: Term, stmt: Stmt) -> InferenceResult {
+    return infer(stmt: stmt, f: .iverson(.equal(lhs: .variable(variable), rhs: value)))
   }
 }

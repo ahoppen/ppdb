@@ -15,13 +15,11 @@ class VariableResolverTests: XCTestCase {
       }
       """
     let parser = Parser(sourceCode: sourceCode)
-    let unresolvedStmts = try! parser.parseFile()
+    let unresolvedAst = try! parser.parseFile()
     
     let variableResolver = VariableResolver()
     XCTAssertNoThrow(try {
-      let stmts = try variableResolver.resolveVariables(in: unresolvedStmts)
-      
-      XCTAssertEqual(stmts.count, 2)
+      let ast = try variableResolver.resolveVariables(in: unresolvedAst)
       
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       let declareStmt = VariableDeclStmt(variable: varX,
@@ -41,20 +39,22 @@ class VariableResolverTests: XCTestCase {
                                          rhs: VariableReferenceExpr(variable: .resolved(varX), range: .whatever),
                                          range: .whatever)
       let whileStmt = WhileStmt(condition: condition, body: codeBlock, range: .whatever)
-      XCTAssertEqualASTIgnoringRanges(stmts, [declareStmt, whileStmt])
+      let expected = TopLevelCodeStmt(stmts: [declareStmt, whileStmt], range: .whatever)
+        
+      XCTAssertEqualASTIgnoringRanges(ast, expected)
     }())
   }
   
   func testFindsUseBeforeDefine() {
     let sourceCode = "x = x - 1"
-    let stmts = try! Parser(sourceCode: sourceCode).parseFile()
-    XCTAssertThrowsError(try VariableResolver().resolveVariables(in: stmts))
+    let ast = try! Parser(sourceCode: sourceCode).parseFile()
+    XCTAssertThrowsError(try VariableResolver().resolveVariables(in: ast))
   }
   
   func testFindsRecursiveVarDecl() {
     let sourceCode = "int x = x - 1"
-    let stmts = try! Parser(sourceCode: sourceCode).parseFile()
-    XCTAssertThrowsError(try VariableResolver().resolveVariables(in: stmts))
+    let ast = try! Parser(sourceCode: sourceCode).parseFile()
+    XCTAssertThrowsError(try VariableResolver().resolveVariables(in: ast))
   }
   
   func testFindsDoubleDeclaration() {
@@ -62,8 +62,8 @@ class VariableResolverTests: XCTestCase {
       int x = 1
       int x = 2
       """
-    let stmts = try! Parser(sourceCode: sourceCode).parseFile()
-    XCTAssertThrowsError(try VariableResolver().resolveVariables(in: stmts))
+    let ast = try! Parser(sourceCode: sourceCode).parseFile()
+    XCTAssertThrowsError(try VariableResolver().resolveVariables(in: ast))
   }
   
   func testVariableNotValidAfterBlock() {
@@ -73,8 +73,8 @@ class VariableResolverTests: XCTestCase {
       }
       x = x + 1
       """
-    let stmts = try! Parser(sourceCode: sourceCode).parseFile()
-    XCTAssertThrowsError(try VariableResolver().resolveVariables(in: stmts))
+    let ast = try! Parser(sourceCode: sourceCode).parseFile()
+    XCTAssertThrowsError(try VariableResolver().resolveVariables(in: ast))
   }
   
   func testCanUseVariablesFromOuterScope() {
@@ -84,7 +84,7 @@ class VariableResolverTests: XCTestCase {
         x = x + 1
       }
       """
-    let stmts = try! Parser(sourceCode: sourceCode).parseFile()
-    XCTAssertNoThrow(try VariableResolver().resolveVariables(in: stmts))
+    let ast = try! Parser(sourceCode: sourceCode).parseFile()
+    XCTAssertNoThrow(try VariableResolver().resolveVariables(in: ast))
   }
 }

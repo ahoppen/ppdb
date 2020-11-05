@@ -47,6 +47,10 @@ public class Parser {
   
   private var usedVariables: [SourceVariable] = []
   
+  /// The ID of the next LoopId that has not been used yet.
+  /// Use `unusedLoopId()` to generate a new `LoopId` and increment this index
+  private var nextUnusedLoopId: Int = 0
+  
   public init(sourceCode: String) {
     self.lexer = Lexer(sourceCode: sourceCode)
   }
@@ -64,6 +68,13 @@ public class Parser {
     variable = SourceVariable(name: name, disambiguationIndex: disambiguationIndex, type: type)
     usedVariables.append(variable)
     return variable
+  }
+  
+  func unusedLoopId() -> LoopId {
+    defer {
+      nextUnusedLoopId += 1
+    }
+    return LoopId(id: nextUnusedLoopId)
   }
   
   // MARK: - Parse the entire file
@@ -234,7 +245,7 @@ public class Parser {
     
     let body = try parseCodeBlock()
     
-    return WhileStmt(condition: condition, body: body, range: whileToken.range.lowerBound..<body.range.upperBound)
+    return WhileStmt(condition: condition, body: body, loopId: unusedLoopId(), range: whileToken.range.lowerBound..<body.range.upperBound)
   }
   
   private func parseCodeBlock() throws -> CodeBlockStmt {

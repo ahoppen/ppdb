@@ -237,7 +237,7 @@ class ParserTests: XCTestCase {
                                          operator: .lessThan,
                                          rhs: VariableReferenceExpr(variable: .unresolved(name: "x"), range: .whatever),
                                          range: .whatever)
-      let whileStmt = WhileStmt(condition: condition, body: codeBlock, range: .whatever)
+      let whileStmt = WhileStmt(condition: condition, body: codeBlock, loopId: LoopId(id: 0), range: .whatever)
       XCTAssertEqualASTIgnoringRanges(ast!, whileStmt)
     }())
   }

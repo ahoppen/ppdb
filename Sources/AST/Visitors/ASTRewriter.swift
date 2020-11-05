@@ -90,6 +90,7 @@ public extension ASTRewriter {
   func visit(_ stmt: WhileStmt) throws -> WhileStmt {
     return WhileStmt(condition: try stmt.condition.accept(self),
                      body: try stmt.body.accept(self),
+                     loopId: stmt.loopId,
                      range: stmt.range)
   }
   

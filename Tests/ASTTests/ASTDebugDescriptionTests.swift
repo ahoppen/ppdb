@@ -21,7 +21,7 @@ class ASTDebugDescriptionTests: XCTestCase {
                                        operator: .lessThan,
                                        rhs: VariableReferenceExpr(variable: .unresolved(name: "x"), range: .whatever),
                                        range: .whatever)
-    let whileStmt = WhileStmt(condition: condition, body: codeBlock, range: .whatever)
+    let whileStmt = WhileStmt(condition: condition, body: codeBlock, loopId: LoopId(id: 0), range: .whatever)
     
     XCTAssertEqual(whileStmt.debugDescription, """
       ▽ WhileStmt

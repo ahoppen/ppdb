@@ -38,7 +38,7 @@ class VariableResolverTests: XCTestCase {
                                          operator: .lessThan,
                                          rhs: VariableReferenceExpr(variable: .resolved(varX), range: .whatever),
                                          range: .whatever)
-      let whileStmt = WhileStmt(condition: condition, body: codeBlock, range: .whatever)
+      let whileStmt = WhileStmt(condition: condition, body: codeBlock, loopId: LoopId(id: 0), range: .whatever)
       let expected = TopLevelCodeStmt(stmts: [declareStmt, whileStmt], range: .whatever)
         
       XCTAssertEqualASTIgnoringRanges(ast, expected)

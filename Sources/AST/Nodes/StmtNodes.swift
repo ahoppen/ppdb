@@ -116,15 +116,27 @@ public struct ProbStmt: Stmt {
   }
 }
 
+/// A unique ID to refer to each loop in order to put loop iteration bounds on it.
+public struct LoopId: Hashable {
+  private let id: Int
+  
+  public init(id: Int) {
+    self.id = id
+  }
+}
+
 public struct WhileStmt: Stmt {
   public let condition: Expr
   public let body: CodeBlockStmt
   
+  public let loopId: LoopId
+  
   public let range: SourceRange
   
-  public init(condition: Expr, body: CodeBlockStmt, range: SourceRange) {
+  public init(condition: Expr, body: CodeBlockStmt, loopId: LoopId, range: SourceRange) {
     self.condition = condition
     self.body = body
+    self.loopId = loopId
     self.range = range
   }
 }
@@ -353,6 +365,7 @@ extension WhileStmt {
       return false
     }
     return self.condition.equalsIgnoringRange(other: other.condition) &&
-      self.body.equalsIgnoringRange(other: other.body)
+      self.body.equalsIgnoringRange(other: other.body) &&
+      self.loopId == other.loopId
   }
 }

@@ -13,7 +13,7 @@ public struct Sample {
   }
   
   /// Return a new sample in which the given `variable` has been assigned the given `value`.
-  func assigning(variable: SourceVariable, value: VariableValue) -> Sample {
+  public func assigning(variable: SourceVariable, value: VariableValue) -> Sample {
     return Sample(values: values.assiging(key: variable, value: value))
   }
 }

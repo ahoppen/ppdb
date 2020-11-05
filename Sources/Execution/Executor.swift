@@ -44,94 +44,173 @@ fileprivate extension Sample {
 }
 
 public class Executor {
-  public static func execute(stmt: Stmt, numSamples: Int) -> (samples: [Sample], loopIterationBounds: LoopIterationBounds) {
+  public static func execute(stmt: Stmt, numSamples: Int) -> (samples: [Sample], loopIterationBounds: LoopIterationBounds, executionOutline: [ExecutionOutlineNode]) {
     let samples = Array(repeating: Sample.empty, count: numSamples)
-    return Executor.execute(stmt: stmt, samples: samples)
+    return Executor.execute(stmt: stmt, samples: samples, executionHistory: [])
   }
   
-  private static func execute(stmt: Stmt, samples: [Sample]) -> (samples: [Sample], loopIterationBounds: LoopIterationBounds) {
+  private static func executeAtomicStmt(
+    stmt: Stmt,
+    samples: [Sample],
+    executionHistory: ExecutionHistory,
+    transformation: (Sample) -> Sample?
+  ) -> (
+    samples: [Sample],
+    loopIterationBounds: LoopIterationBounds,
+    executionOutline: [ExecutionOutlineNode]
+  ) {
+    let executionOutlineNode = ExecutionOutlineNode(
+      children: [],
+      position: stmt.range.lowerBound,
+      label: .sourceCode(stmt.range),
+      executionHistory: executionHistory,
+      samples: samples
+    )
+    let newSamples = samples.compactMap(transformation)
+    return (
+      samples: newSamples,
+      loopIterationBounds: .empty,
+      executionOutline: [executionOutlineNode]
+    )
+  }
+  
+  private static func executeMultipleStmts(
+    stmts: [Stmt],
+    samples: [Sample],
+    executionHistory: ExecutionHistory
+  ) -> (
+    samples: [Sample],
+    loopIterationBounds: LoopIterationBounds,
+    executionOutline: [ExecutionOutlineNode]
+  ) {
+    var newSamples = samples
+    var loopIterationBounds = LoopIterationBounds.empty
+    var executionHistory = executionHistory
+    
+    var executionOutline: [ExecutionOutlineNode] = []
+    
+    for subStmt in stmts {
+      let executionResult = Executor.execute(stmt: subStmt, samples: newSamples, executionHistory: executionHistory)
+      loopIterationBounds = .merging(loopIterationBounds, executionResult.loopIterationBounds)
+      newSamples = executionResult.samples
+      executionOutline += executionResult.executionOutline
+      executionHistory = executionHistory.appending(.stepOver)
+    }
+    return (
+      samples: newSamples,
+      loopIterationBounds:loopIterationBounds,
+      executionOutline: executionOutline
+    )
+  }
+  
+  private static func executeIfStmt(
+    ifStmt: Stmt,
+    ifBody: Stmt,
+    elseBody: Stmt?,
+    samples: [Sample],
+    executionHistory: ExecutionHistory,
+    partition: (Sample) -> Bool
+  ) -> (
+    samples: [Sample],
+    loopIterationBounds: LoopIterationBounds,
+    executionOutline: [ExecutionOutlineNode]
+  ) {
+    let (trueSamples, falseSamples) = samples.partition(by: partition)
+    let trueBranchExecutionResult = Executor.execute(stmt: ifBody, samples: trueSamples, executionHistory: executionHistory.appending(.stepIntoTrue))
+    let trueBranchSamplesAfterStmt = trueBranchExecutionResult.samples
+    var loopIterationBounds = trueBranchExecutionResult.loopIterationBounds
+    let trueBranchExecutionOutlineNode = ExecutionOutlineNode(
+      children: trueBranchExecutionResult.executionOutline,
+      position: ifStmt.range.lowerBound,
+      label: .branch(true),
+      executionHistory: executionHistory.appending(.stepIntoTrue),
+      samples: trueSamples
+    )
+    
+    let falseBranchSamplesAfterStmt: [Sample]
+    let falseBranchExecutionOutlineNode: ExecutionOutlineNode?
+    if let elseBody = elseBody {
+      let falseBranchExecutionResult = Executor.execute(stmt: elseBody, samples: falseSamples, executionHistory: executionHistory.appending(.stepIntoFalse))
+      falseBranchSamplesAfterStmt = falseBranchExecutionResult.samples
+      falseBranchExecutionOutlineNode = ExecutionOutlineNode(
+        children: falseBranchExecutionResult.executionOutline,
+        position: ifStmt.range.lowerBound,
+        label: .branch(false),
+        executionHistory: executionHistory.appending(.stepIntoFalse),
+        samples: falseSamples
+      )
+      
+      loopIterationBounds = .merging(loopIterationBounds, falseBranchExecutionResult.loopIterationBounds)
+    } else {
+      falseBranchSamplesAfterStmt = falseSamples
+      falseBranchExecutionOutlineNode = nil
+    }
+    
+    let executionOutlineNode = ExecutionOutlineNode(
+      children: [trueBranchExecutionOutlineNode, falseBranchExecutionOutlineNode].compactMap({ $0 }),
+      position: ifStmt.range.lowerBound,
+      label: .sourceCode(ifStmt.range),
+      executionHistory: executionHistory,
+      samples: samples
+    )
+    
+    return (
+      samples: trueBranchSamplesAfterStmt + falseBranchSamplesAfterStmt,
+      loopIterationBounds: loopIterationBounds,
+      executionOutline: [executionOutlineNode]
+    )
+  }
+  
+  private static func execute(
+    stmt: Stmt,
+    samples: [Sample],
+    executionHistory: ExecutionHistory
+  ) -> (
+    samples: [Sample],
+    loopIterationBounds: LoopIterationBounds,
+    executionOutline: [ExecutionOutlineNode]
+  ) {
     switch stmt {
     case let stmt as VariableDeclStmt:
-      let newSamples = samples.map({ (sample) -> Sample in
+      return executeAtomicStmt(stmt: stmt, samples: samples, executionHistory: executionHistory) { (sample) in
         let value = sample.evaluate(expr: stmt.expr)
         return sample.assigning(variable: stmt.variable, value: value)
-      })
-      return (samples: newSamples, loopIterationBounds: .empty)
+      }
     case let stmt as AssignStmt:
       guard case .resolved(let variable) = stmt.variable else {
         fatalError("AST must be resolved to be executed")
       }
-      let newSamples = samples.map({ (sample) -> Sample in
+      return executeAtomicStmt(stmt: stmt, samples: samples, executionHistory: executionHistory) { (sample) in
         let value = sample.evaluate(expr: stmt.expr)
         return sample.assigning(variable: variable, value: value)
-      })
-      return (samples: newSamples, loopIterationBounds: .empty)
+      }
     case let stmt as ObserveStmt:
-      let newSamples = samples.filter { sample in
+      return executeAtomicStmt(stmt: stmt, samples: samples, executionHistory: executionHistory) { (sample) in
+        if sample.evaluate(expr: stmt.condition).bool! {
+          return sample
+        } else {
+          return nil
+        }
+      }
+    case let stmt as CodeBlockStmt:
+      return executeMultipleStmts(stmts: stmt.body, samples: samples, executionHistory: executionHistory)
+    case let stmt as TopLevelCodeStmt:
+      return executeMultipleStmts(stmts: stmt.stmts, samples: samples, executionHistory: executionHistory)
+    case let stmt as IfStmt:
+      return executeIfStmt(ifStmt: stmt, ifBody: stmt.ifBody, elseBody: stmt.elseBody, samples: samples, executionHistory: executionHistory) { (sample) -> Bool in
         return sample.evaluate(expr: stmt.condition).bool!
       }
-      return (samples: newSamples, loopIterationBounds: .empty)
-    case let stmt as CodeBlockStmt:
-      var newSamples = samples
-      var loopIterationBounds = LoopIterationBounds.empty
-      for subStmt in stmt.body {
-        let executionResult = Executor.execute(stmt: subStmt, samples: newSamples)
-        newSamples = executionResult.samples
-        loopIterationBounds = .merging(loopIterationBounds, executionResult.loopIterationBounds)
-      }
-      return (samples: newSamples, loopIterationBounds: loopIterationBounds)
-    case let stmt as TopLevelCodeStmt:
-      var newSamples = samples
-      var loopIterationBounds = LoopIterationBounds.empty
-      for subStmt in stmt.stmts {
-        let executionResult = Executor.execute(stmt: subStmt, samples: newSamples)
-        newSamples = executionResult.samples
-        loopIterationBounds = LoopIterationBounds.merging(loopIterationBounds, executionResult.loopIterationBounds)
-      }
-      return (samples: newSamples, loopIterationBounds: loopIterationBounds)
-    case let stmt as IfStmt:
-      let (trueSamples, falseSamples) = samples.partition(by: { $0.evaluate(expr: stmt.condition).bool! })
-      let trueBranchExecutionResult = Executor.execute(stmt: stmt.ifBody, samples: trueSamples)
-      let trueBranchSamplesAfterStmt = trueBranchExecutionResult.samples
-      var loopIterationBounds = trueBranchExecutionResult.loopIterationBounds
-      
-      let falseBranchSamplesAfterStmt: [Sample]
-      if let elseBody = stmt.elseBody {
-        let falseBranchExecutionResult = Executor.execute(stmt: elseBody, samples: falseSamples)
-        falseBranchSamplesAfterStmt = falseBranchExecutionResult.samples
-        loopIterationBounds = .merging(loopIterationBounds, falseBranchExecutionResult.loopIterationBounds)
-      } else {
-        falseBranchSamplesAfterStmt = falseSamples
-      }
-      return (
-        samples: trueBranchSamplesAfterStmt + falseBranchSamplesAfterStmt,
-        loopIterationBounds: loopIterationBounds
-      )
     case let stmt as ProbStmt:
-      let (trueSamples, falseSamples) = samples.partition(by: { sample in
+      return executeIfStmt(ifStmt: stmt, ifBody: stmt.ifBody, elseBody: stmt.elseBody, samples: samples, executionHistory: executionHistory) { (sample) -> Bool in
         let probability = sample.evaluate(expr: stmt.condition).float!
         return Double.random(in: 0..<1) < probability
-      })
-      let trueBranchExecutionResult = Executor.execute(stmt: stmt.ifBody, samples: trueSamples)
-      let trueBranchSamplesAfterStmt = trueBranchExecutionResult.samples
-      var loopIterationBounds = trueBranchExecutionResult.loopIterationBounds
-      
-      let falseBranchSamplesAfterStmt: [Sample]
-      if let elseBody = stmt.elseBody {
-        let falseBranchExecutionResult = Executor.execute(stmt: elseBody, samples: falseSamples)
-        falseBranchSamplesAfterStmt = falseBranchExecutionResult.samples
-        loopIterationBounds = .merging(loopIterationBounds, falseBranchExecutionResult.loopIterationBounds)
-      } else {
-        falseBranchSamplesAfterStmt = falseSamples
       }
-      return (
-        samples: trueBranchSamplesAfterStmt + falseBranchSamplesAfterStmt,
-        loopIterationBounds: loopIterationBounds
-      )
     case let stmt as WhileStmt:
       var liveSamples = samples
       var deadSamples: [Sample] = []
+      var executionHistory = executionHistory
       var loopIterationBounds: LoopIterationBounds = .empty
+      var iterationExecutionOutlineNodes: [ExecutionOutlineNode] = []
       
       // The first iteration of the executor performs the condition check and
       // only puts the samples that satisfy the condition in `liveSamples`.
@@ -140,16 +219,30 @@ public class Executor {
       // with an iteartion count of -1.
       var iterations = -1
       repeat {
+        iterations += 1
         let (trueSamples, falseSamples) = liveSamples.partition(by: { $0.evaluate(expr: stmt.condition).bool! })
+        executionHistory = executionHistory.appending(.stepIntoTrue)
         deadSamples += falseSamples
         liveSamples = trueSamples
-        let executionResult = Executor.execute(stmt: stmt.body, samples: liveSamples)
+        let executionResult = Executor.execute(stmt: stmt.body, samples: liveSamples, executionHistory: executionHistory)
         liveSamples = executionResult.samples
         loopIterationBounds = .merging(loopIterationBounds, executionResult.loopIterationBounds)
-        iterations += 1
+        iterationExecutionOutlineNodes += ExecutionOutlineNode(
+          children: executionResult.executionOutline,
+          position: stmt.range.lowerBound,
+          label: .iteration(iterations + 1), // 1-based iteration count
+          executionHistory: executionHistory,
+          samples: liveSamples
+        )
+        // Add a step over command for each statment in the loop body
+        executionHistory = executionHistory.appending(Array(repeating: DebuggerCommand.stepOver, count: stmt.body.body.count))
       } while !liveSamples.isEmpty
       loopIterationBounds = loopIterationBounds.setting(loopId: stmt.loopId, to: iterations)
-      return (samples: deadSamples, loopIterationBounds: loopIterationBounds)
+      return (
+        samples: deadSamples,
+        loopIterationBounds: loopIterationBounds,
+        executionOutline: iterationExecutionOutlineNodes
+      )
     default:
       fatalError("Unknown Stmt type")
     }

@@ -1,12 +1,23 @@
 import AST
 
-public enum DebuggerCommand {
+public enum DebuggerCommand: CustomStringConvertible {
   case stepOver
   case stepIntoTrue
   case stepIntoFalse
+  
+  public var description: String {
+    switch self {
+    case .stepOver:
+      return "so"
+    case .stepIntoTrue:
+      return "sit"
+    case .stepIntoFalse:
+      return "sif"
+    }
+  }
 }
 
-public struct ExecutionHistory: ExpressibleByArrayLiteral {
+public struct ExecutionHistory: ExpressibleByArrayLiteral, CustomStringConvertible {
   public let history: [DebuggerCommand]
   
   public init(arrayLiteral elements: DebuggerCommand...) {
@@ -15,6 +26,10 @@ public struct ExecutionHistory: ExpressibleByArrayLiteral {
   
   public init(history: [DebuggerCommand]) {
     self.history = history
+  }
+  
+  public var description: String {
+    return history.description
   }
   
   public func augmented(with topLevelCode: TopLevelCodeStmt) -> AugmentedExecutionHistory {
@@ -49,6 +64,14 @@ public struct ExecutionHistory: ExpressibleByArrayLiteral {
       }
     }
     return AugmentedExecutionHistory(history: augmentedHistory)
+  }
+  
+  public func appending(_ commands: [DebuggerCommand]) -> ExecutionHistory {
+    return ExecutionHistory(history: history + commands)
+  }
+  
+  public func appending(_ command: DebuggerCommand) -> ExecutionHistory {
+    return self.appending([command])
   }
 }
 

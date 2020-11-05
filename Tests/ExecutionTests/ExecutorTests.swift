@@ -21,7 +21,7 @@ class ExecutorTests: XCTestCase {
       
       let ast = try parse(source)
       
-      let (samples, loopIterationBounds) = Executor.execute(stmt: ast, numSamples: 1)
+      let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1)
       XCTAssertEqual(loopIterationBounds, .empty)
       XCTAssertEqual(samples.count, 1)
       let sample = samples.first!
@@ -40,7 +40,7 @@ class ExecutorTests: XCTestCase {
       
       let ast = try parse(source)
       
-      let (samples, loopIterationBounds) = Executor.execute(stmt: ast, numSamples: 1)
+      let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1)
       XCTAssertEqual(loopIterationBounds, .empty)
       XCTAssertEqual(samples.count, 1)
       let sample = samples.first!
@@ -60,7 +60,7 @@ class ExecutorTests: XCTestCase {
       
       let ast = try parse(source)
       
-      let (samples, loopIterationBounds) = Executor.execute(stmt: ast, numSamples: 1000)
+      let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1000)
       XCTAssertEqual(loopIterationBounds, .empty)
       XCTAssertEqual(samples.count, 1000)
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
@@ -83,7 +83,7 @@ class ExecutorTests: XCTestCase {
       
       let ast = try parse(source)
       
-      let (samples, loopIterationBounds) = Executor.execute(stmt: ast, numSamples: 1000)
+      let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1000)
       XCTAssertEqual(loopIterationBounds, .empty)
       XCTAssertEqual(samples.count, 1000)
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
@@ -103,7 +103,7 @@ class ExecutorTests: XCTestCase {
       
       let ast = try parse(source)
       
-      let (samples, loopIterationBounds) = Executor.execute(stmt: ast, numSamples: 1)
+      let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1)
       XCTAssertEqual(loopIterationBounds, [
         LoopId(id: 0): 5
       ])
@@ -129,7 +129,7 @@ class ExecutorTests: XCTestCase {
       
       let ast = try parse(source)
       
-      let (samples, _) = Executor.execute(stmt: ast, numSamples: 1000)
+      let (samples, _, _ ) = Executor.execute(stmt: ast, numSamples: 1000)
       XCTAssertEqual(samples.count, 1000)
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       let varXValue = samples.map({ $0.values[varX]!.integer! }).average

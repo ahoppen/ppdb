@@ -87,7 +87,16 @@ let package = Package(
         "TestUtils",
       ]
     ),
-    
+    .testTarget(
+      name: "ExecutionHistoryTests",
+      dependencies: [
+        "AST",
+        "ExecutionHistory",
+        "Parser",
+        "TypeChecker",
+        "TestUtils",
+      ]
+    ),
     .testTarget(
       name: "ParserTests",
       dependencies: [

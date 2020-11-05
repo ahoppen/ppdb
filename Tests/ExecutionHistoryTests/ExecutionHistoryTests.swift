@@ -1,7 +1,7 @@
 import AST
 import Parser
 import TypeChecker
-import WPInference
+import ExecutionHistory
 
 import XCTest
 

@@ -1,10 +1,3 @@
-//
-//  VariableValue.swift
-//  
-//
-//  Created by Alex Hoppen on 04.11.20.
-//
-
 /// The value a `SourceVariable` can take.
 public enum VariableValue: Hashable, CustomStringConvertible {
   case integer(Int)

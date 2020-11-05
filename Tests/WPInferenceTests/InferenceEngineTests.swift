@@ -46,14 +46,22 @@ class InferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(5), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varX, equalTo: .number(5))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(6), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varX, equalTo: .number(6))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
@@ -74,14 +82,22 @@ class InferenceEngineTests: XCTestCase {
       let varZ = SourceVariable(name: "z", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varZ, being: .number(7), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varZ, equalTo: .number(7))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varZ, being: .number(6), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varZ, equalTo: .number(6))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
@@ -103,21 +119,33 @@ class InferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(0), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varX, equalTo: .number(0))
+        ),
         wpf: 0.2,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(1), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varX, equalTo: .number(1))
+          ),
         wpf: 0.8,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(2), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varX, equalTo: .number(2))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
@@ -142,21 +170,33 @@ class InferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(0), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varX, equalTo: .number(0))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(1), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varX, equalTo: .number(1))
+        ),
         wpf: 0.8,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(2), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [:],
+          f: .probability(of: varX, equalTo: .number(2))
+        ),
         wpf: 0.2,
         wp1: 1,
         wlp1: 1,
@@ -178,21 +218,33 @@ class InferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(0), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 5],
+          f: .probability(of: varX, equalTo: .number(0))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(1), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 5],
+          f: .probability(of: varX, equalTo: .number(1))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(5), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 5],
+          f: .probability(of: varX, equalTo: .number(5))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
@@ -218,15 +270,23 @@ class InferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(0), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 10],
+          f: .probability(of: varX, equalTo: .number(0))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
         wlp0: 0,
         accuracy: 0.001
-      ) 
+      )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(1), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 10],
+          f: .probability(of: varX, equalTo: .number(1))
+        ),
         wpf: 0.5,
         wp1: 1,
         wlp1: 1,
@@ -234,7 +294,11 @@ class InferenceEngineTests: XCTestCase {
         accuracy: 0.001
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(2), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 10],
+          f: .probability(of: varX, equalTo: .number(2))
+        ),
         wpf: 0.25,
         wp1: 1,
         wlp1: 1,
@@ -242,11 +306,39 @@ class InferenceEngineTests: XCTestCase {
         accuracy: 0.001
       )
       XCTAssertEqualInferenceResult(
-        InferenceEngine.inferProbability(of: varX, being: .number(3), stmt: ast),
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 10],
+          f: .probability(of: varX, equalTo: .number(3))
+        ),
         wpf: 0.125,
         wp1: 1,
         wlp1: 1,
         wlp0: 0,
+        accuracy: 0.001
+      )
+      XCTAssertEqualInferenceResult(
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 1],
+          f: .probability(of: varX, equalTo: .number(1))
+        ),
+        wpf: 0.5,
+        wp1: 0.5,
+        wlp1: 1,
+        wlp0: 0.5,
+        accuracy: 0.001
+      )
+      XCTAssertEqualInferenceResult(
+        InferenceEngine.infer(
+          stmt: ast,
+          loopIterationBounds: [LoopId(id: 0): 2],
+          f: .probability(of: varX, equalTo: .number(1))
+        ),
+        wpf: 0.5,
+        wp1: 0.75,
+        wlp1: 1,
+        wlp0: 0.25,
         accuracy: 0.001
       )
     }())

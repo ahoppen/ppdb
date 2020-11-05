@@ -1,16 +1,17 @@
 import AST
+import ExecutionHistory
 
 public enum HistoryInferenceEngine {
-  public static func infer(history: ExecutionHistory, ast: TopLevelCodeStmt, f: Term) -> InferenceResult {
-    return infer(history: history.augmented(with: ast), previousResult: .initial(f: f))
+  public static func infer(history: ExecutionHistory, loopIterationBounds: LoopIterationBounds, ast: TopLevelCodeStmt, f: Term) -> InferenceResult {
+    return infer(history: history.augmented(with: ast), loopIterationBounds: loopIterationBounds, previousResult: .initial(f: f))
   }
   
-  private static func infer(history: AugmentedExecutionHistory, previousResult: InferenceResult) -> InferenceResult {
+  private static func infer(history: AugmentedExecutionHistory, loopIterationBounds: LoopIterationBounds, previousResult: InferenceResult) -> InferenceResult {
     var intermediateResult = previousResult
     for (debuggerCommand, stmt) in history.history.reversed() {
       switch (debuggerCommand, stmt) {
       case (.stepOver, _):
-        intermediateResult = InferenceEngine.infer(stmt: stmt, previousResult: intermediateResult)
+        intermediateResult = InferenceEngine.infer(stmt: stmt, loopIterationBounds: loopIterationBounds, previousResult: intermediateResult)
         
       case (.stepIntoTrue, let stmt as IfStmt):
         intermediateResult = intermediateResult.transformAllComponents(transformation: {
@@ -25,7 +26,7 @@ public enum HistoryInferenceEngine {
           return Term.iverson(stmt.condition.term) * $0
         })
       case (.stepIntoTrue, _):
-        intermediateResult = InferenceEngine.infer(stmt: stmt, previousResult: intermediateResult)
+        intermediateResult = InferenceEngine.infer(stmt: stmt, loopIterationBounds: loopIterationBounds, previousResult: intermediateResult)
         
       case (.stepIntoFalse, let stmt as IfStmt):
         intermediateResult = intermediateResult.transformAllComponents(transformation: {
@@ -40,7 +41,7 @@ public enum HistoryInferenceEngine {
           return Term.iverson(Term.not(stmt.condition.term)) * $0
         })
       case (.stepIntoFalse, _):
-        intermediateResult = InferenceEngine.infer(stmt: stmt, previousResult: intermediateResult)
+        intermediateResult = InferenceEngine.infer(stmt: stmt, loopIterationBounds: loopIterationBounds, previousResult: intermediateResult)
       }
     }
     return intermediateResult

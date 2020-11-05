@@ -28,7 +28,14 @@ let package = Package(
       name: "Execution",
       dependencies: [
         "AST",
+        "ExecutionHistory",
         "Utils",
+      ]
+    ),
+    .target(
+      name: "ExecutionHistory",
+      dependencies: [
+        "AST",
       ]
     ),
     .target(
@@ -56,6 +63,7 @@ let package = Package(
       name: "WPInference",
       dependencies: [
         "AST",
+        "ExecutionHistory",
         "Utils",
       ]
     ),

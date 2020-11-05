@@ -1,11 +1,12 @@
 import AST
+import ExecutionHistory
 
 public enum InferenceEngine {
-  public static func infer(stmt: Stmt, f: Term) -> InferenceResult {
-    return infer(stmt: stmt, previousResult: .initial(f: f))
+  public static func infer(stmt: Stmt, loopIterationBounds: LoopIterationBounds, f: Term) -> InferenceResult {
+    return infer(stmt: stmt, loopIterationBounds: loopIterationBounds, previousResult: .initial(f: f))
   }
   
-  internal static func infer(stmt: Stmt, previousResult: InferenceResult) -> InferenceResult {
+  internal static func infer(stmt: Stmt, loopIterationBounds: LoopIterationBounds, previousResult: InferenceResult) -> InferenceResult {
     switch stmt {
     case let stmt as VariableDeclStmt:
       return previousResult.transformAllComponents(transformation: {
@@ -22,20 +23,20 @@ public enum InferenceEngine {
     case let codeBlock as CodeBlockStmt:
       var intermediateResult = previousResult
       for stmt in codeBlock.body.reversed() {
-        intermediateResult = infer(stmt: stmt, previousResult: intermediateResult)
+        intermediateResult = infer(stmt: stmt, loopIterationBounds: loopIterationBounds, previousResult: intermediateResult)
       }
       return intermediateResult
     case let codeBlock as TopLevelCodeStmt:
       var intermediateResult = previousResult
       for stmt in codeBlock.stmts.reversed() {
-        intermediateResult = infer(stmt: stmt, previousResult: intermediateResult)
+        intermediateResult = infer(stmt: stmt, loopIterationBounds: loopIterationBounds, previousResult: intermediateResult)
       }
       return intermediateResult
     case let stmt as IfStmt:
-      let ifInferenceResult = infer(stmt: stmt.ifBody, previousResult: previousResult)
+      let ifInferenceResult = infer(stmt: stmt.ifBody, loopIterationBounds: loopIterationBounds, previousResult: previousResult)
       let elseInferenceResult: InferenceResult
       if let elseBody = stmt.elseBody {
-        elseInferenceResult = infer(stmt: elseBody, previousResult: previousResult)
+        elseInferenceResult = infer(stmt: elseBody, loopIterationBounds: loopIterationBounds, previousResult: previousResult)
       } else {
         elseInferenceResult = previousResult
       }
@@ -47,10 +48,10 @@ public enum InferenceEngine {
         rhs: elseInferenceResult
       )
     case let stmt as ProbStmt:
-      let ifInferenceResult = infer(stmt: stmt.ifBody, previousResult: previousResult)
+      let ifInferenceResult = infer(stmt: stmt.ifBody, loopIterationBounds: loopIterationBounds, previousResult: previousResult)
       let elseInferenceResult: InferenceResult
       if let elseBody = stmt.elseBody {
-        elseInferenceResult = infer(stmt: elseBody, previousResult: previousResult)
+        elseInferenceResult = infer(stmt: elseBody, loopIterationBounds: loopIterationBounds, previousResult: previousResult)
       } else {
         elseInferenceResult = previousResult
       }
@@ -62,7 +63,9 @@ public enum InferenceEngine {
         rhs: elseInferenceResult
       )
     case let stmt as WhileStmt:
-      let loopIterationBound = 20 // FIXME: Dynamic loop iteration bounds
+      guard let loopIterationBound = loopIterationBounds.bounds[stmt.loopId] else {
+        fatalError("Missing a loop iteration bound for loop with ID \(stmt.loopId). Did you forget to specify one?")
+      }
       var intermediateResult = previousResult.transform(wpTransformation: {
         Term.iverson(Term.not(stmt.condition.term)) * $0
       }, wlpTransformation: {
@@ -70,7 +73,7 @@ public enum InferenceEngine {
       })
       let condition = stmt.condition.term
       for _ in 0..<loopIterationBound {
-        let bodyInferenceResult = infer(stmt: stmt.body, previousResult: intermediateResult)
+        let bodyInferenceResult = infer(stmt: stmt.body, loopIterationBounds: loopIterationBounds, previousResult: intermediateResult)
         intermediateResult = .combining(
           lhsMultiplier: Term.iverson(condition),
           lhs: bodyInferenceResult,
@@ -86,7 +89,7 @@ public enum InferenceEngine {
 }
 
 extension InferenceEngine {
-  public static func inferProbability(of variable: SourceVariable, being value: Term, stmt: Stmt) -> InferenceResult {
-    return infer(stmt: stmt, f: .iverson(.equal(lhs: .variable(variable), rhs: value)))
+  public static func inferProbability(of variable: SourceVariable, being value: Term, loopIterationBounds: LoopIterationBounds, stmt: Stmt) -> InferenceResult {
+    return infer(stmt: stmt, loopIterationBounds: loopIterationBounds, f: .iverson(.equal(lhs: .variable(variable), rhs: value)))
   }
 }

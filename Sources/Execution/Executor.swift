@@ -1,4 +1,5 @@
 import AST
+import ExecutionHistory
 import Utils
 
 fileprivate extension Sample {

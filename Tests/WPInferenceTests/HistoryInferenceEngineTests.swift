@@ -59,21 +59,31 @@ class HistoryInferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver], ast: ast, f: .probability(of: varX, being: .number(5))),
+        HistoryInferenceEngine.infer(history: [.stepOver], loopIterationBounds: [:], ast: ast, f: .probability(of: varX, being: .number(5))),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver], ast: ast, f: .probability(of: varX, being: .number(7))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(7))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver], ast: ast, f: .probability(of: varX, being: .number(10))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(10))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
@@ -81,21 +91,36 @@ class HistoryInferenceEngineTests: XCTestCase {
       )
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepOver], ast: ast, f: .probability(of: varX, being: .number(5))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(5))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepOver], ast: ast, f: .probability(of: varX, being: .number(7))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(7))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepOver], ast: ast, f: .probability(of: varX, being: .number(10))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(10))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
@@ -103,21 +128,36 @@ class HistoryInferenceEngineTests: XCTestCase {
       )
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepOver, .stepOver], ast: ast, f: .probability(of: varX, being: .number(5))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepOver, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(5))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepOver, .stepOver], ast: ast, f: .probability(of: varX, being: .number(7))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepOver, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(7))
+        ),
         wpf: 0,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepOver, .stepOver], ast: ast, f: .probability(of: varX, being: .number(10))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepOver, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(10))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
@@ -139,28 +179,48 @@ class HistoryInferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepOver], ast: ast, f: .probability(of: varX, being: .number(16))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(16))
+        ),
         wpf: 0.5,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepOver], ast: ast, f: .probability(of: varX, being: .number(6))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(6))
+        ),
         wpf: 0.5,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepIntoTrue], ast: ast, f: .probability(of: varX, being: .number(6))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepIntoTrue],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(6))
+        ),
         wpf: 0.5,
         wp1: 0.5,
         wlp1: 0.5,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepIntoTrue, .stepOver], ast: ast, f: .probability(of: varX, being: .number(16))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepIntoTrue, .stepOver],
+          loopIterationBounds: [:],
+          ast: ast,
+          f: .probability(of: varX, being: .number(16))
+        ),
         wpf: 0.5,
         wp1: 0.5,
         wlp1: 0.5,
@@ -182,35 +242,60 @@ class HistoryInferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver], ast: ast, f: .probability(of: varX, being: .number(5))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver],
+          loopIterationBounds: [LoopId(id: 0): 10],
+          ast: ast,
+          f: .probability(of: varX, being: .number(5))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepIntoTrue], ast: ast, f: .probability(of: varX, being: .number(5))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepIntoTrue],
+          loopIterationBounds: [LoopId(id: 0): 10],
+          ast: ast,
+          f: .probability(of: varX, being: .number(5))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepIntoTrue, .stepOver], ast: ast, f: .probability(of: varX, being: .number(4))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepIntoTrue, .stepOver],
+          loopIterationBounds: [LoopId(id: 0): 10],
+          ast: ast,
+          f: .probability(of: varX, being: .number(4))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepIntoTrue, .stepOver, .stepIntoTrue, .stepOver], ast: ast, f: .probability(of: varX, being: .number(3))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepIntoTrue, .stepOver, .stepIntoTrue, .stepOver],
+          loopIterationBounds: [LoopId(id: 0): 10],
+          ast: ast,
+          f: .probability(of: varX, being: .number(3))
+        ),
         wpf: 1,
         wp1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver, .stepIntoTrue, .stepOver, .stepIntoFalse], ast: ast, f: .probability(of: varX, being: .number(3))),
+        HistoryInferenceEngine.infer(
+          history: [.stepOver, .stepIntoTrue, .stepOver, .stepIntoFalse],
+          loopIterationBounds: [LoopId(id: 0): 10],
+          ast: ast,
+          f: .probability(of: varX, being: .number(3))
+        ),
         wpf: 0,
         wp1: 0,
         wlp1: 0,

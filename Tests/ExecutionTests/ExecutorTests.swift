@@ -22,7 +22,7 @@ class ExecutorTests: XCTestCase {
       let ast = try parse(source)
       
       let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1)
-      XCTAssertEqual(loopIterationBounds, .empty)
+      XCTAssertEqual(loopIterationBounds, [:])
       XCTAssertEqual(samples.count, 1)
       let sample = samples.first!
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
@@ -41,7 +41,7 @@ class ExecutorTests: XCTestCase {
       let ast = try parse(source)
       
       let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1)
-      XCTAssertEqual(loopIterationBounds, .empty)
+      XCTAssertEqual(loopIterationBounds, [:])
       XCTAssertEqual(samples.count, 1)
       let sample = samples.first!
       let varX = SourceVariable(name: "z", disambiguationIndex: 1, type: .int)
@@ -61,7 +61,7 @@ class ExecutorTests: XCTestCase {
       let ast = try parse(source)
       
       let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1000)
-      XCTAssertEqual(loopIterationBounds, .empty)
+      XCTAssertEqual(loopIterationBounds, [:])
       XCTAssertEqual(samples.count, 1000)
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       let varXValue = samples.map({ $0.values[varX]!.integer! }).average
@@ -84,7 +84,7 @@ class ExecutorTests: XCTestCase {
       let ast = try parse(source)
       
       let (samples, loopIterationBounds, _) = Executor.execute(stmt: ast, numSamples: 1000)
-      XCTAssertEqual(loopIterationBounds, .empty)
+      XCTAssertEqual(loopIterationBounds, [:])
       XCTAssertEqual(samples.count, 1000)
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       let varXValue = samples.map({ $0.values[varX]!.integer! }).average

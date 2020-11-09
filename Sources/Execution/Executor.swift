@@ -28,7 +28,7 @@ public enum Executor {
     let newSamples = samples.compactMap(transformation)
     return (
       samples: newSamples,
-      loopIterationBounds: .empty,
+      loopIterationBounds: [:],
       executionOutline: [executionOutlineNode]
     )
   }
@@ -43,7 +43,7 @@ public enum Executor {
     executionOutline: [ExecutionOutlineNode]
   ) {
     var newSamples = samples
-    var loopIterationBounds = LoopIterationBounds.empty
+    var loopIterationBounds: LoopIterationBounds = [:]
     var executionHistory = executionHistory
     
     var executionOutline: [ExecutionOutlineNode] = []
@@ -168,7 +168,7 @@ public enum Executor {
       var liveSamples = samples
       var deadSamples: [Sample] = []
       var executionHistory = executionHistory
-      var loopIterationBounds: LoopIterationBounds = .empty
+      var loopIterationBounds: LoopIterationBounds = [:]
       var iterationExecutionOutlineNodes: [ExecutionOutlineNode] = []
       
       // The first iteration of the executor performs the condition check and

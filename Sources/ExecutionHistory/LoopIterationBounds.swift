@@ -11,8 +11,6 @@ public struct LoopIterationBounds: Equatable, ExpressibleByDictionaryLiteral {
     self.bounds = Dictionary(uniqueKeysWithValues: elements)
   }
   
-  static public var empty = LoopIterationBounds(bounds: [:])
-  
   /// Merge two `LoopIterationBounds` by taking the maximum bound for each loop.
   public static func merging(_ lhs: LoopIterationBounds, _ rhs: LoopIterationBounds) -> LoopIterationBounds {
     return LoopIterationBounds(bounds: Dictionary.merged([lhs.bounds, rhs.bounds], uniquingKeysWith: {

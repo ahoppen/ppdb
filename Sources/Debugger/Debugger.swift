@@ -27,16 +27,27 @@ public class Debugger {
   private let loopIterationBounds: LoopIterationBounds
   private let executionOutline: [ExecutionOutlineNode]
   
-  private var executionHistory: ExecutionHistory = []
-  private var augmentedExecutionHistory: AugmentedExecutionHistory {
-    return executionHistory.augmented(with: ast)
+  private var executionHistoryStack: [ExecutionHistory] = [[]]
+  private var executionHistory: ExecutionHistory {
+    get {
+      return executionHistoryStack.last!
+    }
+    set {
+      executionHistoryStack[executionHistoryStack.count - 1] = newValue
+    }
+  }
+  private var augmentedExecutionHistory: AugmentedExecutionHistory? {
+    return try? executionHistory.augmented(with: ast)
   }
   
-  private var sourceLocation: SourceLocation? {
-    return self.augmentedExecutionHistory.history.last?.stmt.range.lowerBound
+  public var sourceLocation: SourceLocation? {
+    return self.augmentedExecutionHistory?.history.last?.stmt.range.lowerBound
   }
   
   public var samples: [Sample] {
+    guard let augmentedExecutionHistory = augmentedExecutionHistory else {
+      return []
+    }
     return HistoryExecutor.execute(history: augmentedExecutionHistory, numSamples: numSamples)
   }
   
@@ -63,6 +74,9 @@ public class Debugger {
     if samples.isEmpty {
       return [:]
     }
+    guard let augmentedExecutionHistory = augmentedExecutionHistory else {
+      return [:]
+    }
     var variableValues: [SourceVariable: [VariableValue: ClosedRange<Double>]] = [:]
     for variable in samples.first!.values.keys {
       let queryVar = SourceVariable(name: "$query", disambiguationIndex: 0, type: .int)
@@ -78,7 +92,10 @@ public class Debugger {
         let lowerBoundTerm = lowerBoundPlaceholderTerm.replacing(variable: queryVar, with: Term(value)) ?? lowerBoundPlaceholderTerm
         let upperBoundTerm = upperBoundPlaceholderTerm.replacing(variable: queryVar, with: Term(value)) ?? lowerBoundTerm
         
-        distribution[value] = lowerBoundTerm.doubleValue...upperBoundTerm.doubleValue
+        if upperBoundTerm.doubleValue - lowerBoundTerm.doubleValue > 0.01 {
+          fatalError("Difference between upper bound and lower bound is bigger than numerical instabilities should account for")
+        }
+        distribution[value] = lowerBoundTerm.doubleValue...max(lowerBoundTerm.doubleValue, upperBoundTerm.doubleValue)
       }
       variableValues[variable] = distribution
     }
@@ -108,5 +125,13 @@ public class Debugger {
   
   public func stepIntoFalse() {
     self.executionHistory = executionHistory.appending(.stepIntoFalse)
+  }
+  
+  public func saveState() {
+    self.executionHistoryStack.append(self.executionHistoryStack.last!)
+  }
+  
+  public func restoreState() {
+    _ = self.executionHistoryStack.popLast()
   }
 }

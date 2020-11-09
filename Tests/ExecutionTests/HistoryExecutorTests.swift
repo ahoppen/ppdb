@@ -26,16 +26,16 @@ class HistoryExecutorTests: XCTestCase {
       
       let ast = try parse(source) as! TopLevelCodeStmt
       
-      let samples1StepOver = HistoryExecutor.execute(history: [.stepOver], ast: ast, numSamples: 1)
+      let samples1StepOver = try HistoryExecutor.execute(history: [.stepOver], ast: ast, numSamples: 1)
       XCTAssertEqual(samples1StepOver.count, 1)
       XCTAssertEqual(samples1StepOver[0].values[varX]?.integer, 5)
       
-      let samples2StepOver = HistoryExecutor.execute(history: [.stepOver, .stepOver], ast: ast, numSamples: 1)
+      let samples2StepOver = try HistoryExecutor.execute(history: [.stepOver, .stepOver], ast: ast, numSamples: 1)
       XCTAssertEqual(samples2StepOver.count, 1)
       XCTAssertEqual(samples2StepOver[0].values[varX]?.integer, 5)
       XCTAssertEqual(samples2StepOver[0].values[varY]?.integer, 2)
       
-      let samples3StepOver = HistoryExecutor.execute(history: [.stepOver, .stepOver, .stepOver], ast: ast, numSamples: 1)
+      let samples3StepOver = try HistoryExecutor.execute(history: [.stepOver, .stepOver, .stepOver], ast: ast, numSamples: 1)
       XCTAssertEqual(samples3StepOver.count, 1)
       XCTAssertEqual(samples3StepOver[0].values[varX]?.integer, 5)
       XCTAssertEqual(samples3StepOver[0].values[varY]?.integer, 2)

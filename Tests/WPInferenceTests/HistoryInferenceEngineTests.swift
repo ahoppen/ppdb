@@ -59,14 +59,14 @@ class HistoryInferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(history: [.stepOver], loopIterationBounds: [:], ast: ast, f: .probability(of: varX, being: .number(5))),
+        try HistoryInferenceEngine.infer(history: [.stepOver], loopIterationBounds: [:], ast: ast, f: .probability(of: varX, being: .number(5))),
         wpf: 1,
         woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -78,7 +78,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -91,7 +91,7 @@ class HistoryInferenceEngineTests: XCTestCase {
       )
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -103,7 +103,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -115,7 +115,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -128,7 +128,7 @@ class HistoryInferenceEngineTests: XCTestCase {
       )
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepOver, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -140,7 +140,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepOver, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -152,7 +152,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepOver, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -179,7 +179,7 @@ class HistoryInferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -191,7 +191,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -203,7 +203,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepIntoTrue],
           loopIterationBounds: [:],
           ast: ast,
@@ -215,7 +215,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepIntoTrue, .stepOver],
           loopIterationBounds: [:],
           ast: ast,
@@ -242,7 +242,7 @@ class HistoryInferenceEngineTests: XCTestCase {
       let varX = SourceVariable(name: "x", disambiguationIndex: 1, type: .int)
       
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver],
           loopIterationBounds: [LoopId(id: 0): 10],
           ast: ast,
@@ -254,7 +254,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepIntoTrue],
           loopIterationBounds: [LoopId(id: 0): 10],
           ast: ast,
@@ -266,7 +266,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepIntoTrue, .stepOver],
           loopIterationBounds: [LoopId(id: 0): 10],
           ast: ast,
@@ -278,7 +278,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepIntoTrue, .stepOver, .stepIntoTrue, .stepOver],
           loopIterationBounds: [LoopId(id: 0): 10],
           ast: ast,
@@ -290,7 +290,7 @@ class HistoryInferenceEngineTests: XCTestCase {
         wlp0: 0
       )
       XCTAssertEqualInferenceResult(
-        HistoryInferenceEngine.infer(
+        try HistoryInferenceEngine.infer(
           history: [.stepOver, .stepIntoTrue, .stepOver, .stepIntoFalse],
           loopIterationBounds: [LoopId(id: 0): 10],
           ast: ast,

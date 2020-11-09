@@ -2,8 +2,8 @@ import AST
 import ExecutionHistory
 
 public enum HistoryExecutor {
-  public static func execute(history: ExecutionHistory, ast: TopLevelCodeStmt, numSamples: Int) -> [Sample] {
-    return self.execute(history: history.augmented(with: ast), samples: Array(repeating: Sample.empty, count: numSamples))
+  public static func execute(history: ExecutionHistory, ast: TopLevelCodeStmt, numSamples: Int) throws -> [Sample] {
+    return self.execute(history: try history.augmented(with: ast), samples: Array(repeating: Sample.empty, count: numSamples))
   }
   
   public static func execute(history: AugmentedExecutionHistory, numSamples: Int) -> [Sample] {

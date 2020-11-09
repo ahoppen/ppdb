@@ -18,6 +18,10 @@ public enum DebuggerCommand: CustomStringConvertible {
 }
 
 public struct ExecutionHistory: ExpressibleByArrayLiteral, CustomStringConvertible {
+  enum Error: Swift.Error {
+    case invalidExecutionHistory
+  }
+  
   public let history: [DebuggerCommand]
   
   public init(arrayLiteral elements: DebuggerCommand...) {
@@ -32,10 +36,13 @@ public struct ExecutionHistory: ExpressibleByArrayLiteral, CustomStringConvertib
     return history.description
   }
   
-  public func augmented(with topLevelCode: TopLevelCodeStmt) -> AugmentedExecutionHistory {
+  public func augmented(with topLevelCode: TopLevelCodeStmt) throws -> AugmentedExecutionHistory {
     var remainingStatements = topLevelCode.stmts
     var augmentedHistory: [(DebuggerCommand, Stmt)] = []
     for debuggerCommand in history {
+      if remainingStatements.isEmpty {
+        throw Error.invalidExecutionHistory
+      }
       let currentStatement = remainingStatements.removeFirst()
       
       augmentedHistory.append((debuggerCommand, currentStatement))

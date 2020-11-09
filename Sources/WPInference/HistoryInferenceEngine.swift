@@ -2,8 +2,8 @@ import AST
 import ExecutionHistory
 
 public enum HistoryInferenceEngine {
-  public static func infer(history: ExecutionHistory, loopIterationBounds: LoopIterationBounds, ast: TopLevelCodeStmt, f: Term) -> InferenceResult {
-    return infer(history: history.augmented(with: ast), loopIterationBounds: loopIterationBounds, previousResult: .initial(f: f))
+  public static func infer(history: ExecutionHistory, loopIterationBounds: LoopIterationBounds, ast: TopLevelCodeStmt, f: Term) throws -> InferenceResult {
+    return infer(history: try history.augmented(with: ast), loopIterationBounds: loopIterationBounds, previousResult: .initial(f: f))
   }
   
   public static func infer(history: AugmentedExecutionHistory, loopIterationBounds: LoopIterationBounds, f: Term) -> InferenceResult {

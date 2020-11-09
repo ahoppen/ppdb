@@ -30,7 +30,7 @@ class ExecutionHistoryTests: XCTestCase {
       
       let executionHistory = ExecutionHistory(history: [.stepOver, .stepIntoTrue, .stepOver])
       
-      let augmentedExecutionHistory = executionHistory.augmented(with: ast).history
+      let augmentedExecutionHistory = try executionHistory.augmented(with: ast).history
       XCTAssertEqual(augmentedExecutionHistory.count, 3)
       XCTAssertEqual(augmentedExecutionHistory[0].command, .stepOver)
       XCTAssertEqual(augmentedExecutionHistory[0].stmt.range.sourceCode(in: source), "int x = 5")
@@ -53,7 +53,7 @@ class ExecutionHistoryTests: XCTestCase {
       
       let executionHistory = ExecutionHistory(history: [.stepOver, .stepOver, .stepOver])
       
-      let augmentedExecutionHistory = executionHistory.augmented(with: ast).history
+      let augmentedExecutionHistory = try executionHistory.augmented(with: ast).history
       XCTAssertEqual(augmentedExecutionHistory.count, 3)
       XCTAssertEqual(augmentedExecutionHistory[0].command, .stepOver)
       XCTAssertEqual(augmentedExecutionHistory[0].stmt.range.sourceCode(in: source), "int x = 5")
@@ -76,7 +76,7 @@ class ExecutionHistoryTests: XCTestCase {
       
       let executionHistory = ExecutionHistory(history: [.stepOver, .stepIntoTrue, .stepOver, .stepOver])
       
-      let augmentedExecutionHistory = executionHistory.augmented(with: ast).history
+      let augmentedExecutionHistory = try executionHistory.augmented(with: ast).history
       XCTAssertEqual(augmentedExecutionHistory.count, 4)
       XCTAssertEqual(augmentedExecutionHistory[0].command, .stepOver)
       XCTAssertEqual(augmentedExecutionHistory[0].stmt.range.sourceCode(in: source), "int x = 5")
@@ -101,7 +101,7 @@ class ExecutionHistoryTests: XCTestCase {
       
       let executionHistory = ExecutionHistory(history: [.stepOver, .stepIntoFalse, .stepOver])
       
-      let augmentedExecutionHistory = executionHistory.augmented(with: ast).history
+      let augmentedExecutionHistory = try executionHistory.augmented(with: ast).history
       XCTAssertEqual(augmentedExecutionHistory.count, 3)
       XCTAssertEqual(augmentedExecutionHistory[0].command, .stepOver)
       XCTAssertEqual(augmentedExecutionHistory[0].stmt.range.sourceCode(in: source), "int x = 5")
@@ -124,7 +124,7 @@ class ExecutionHistoryTests: XCTestCase {
       
       let executionHistory = ExecutionHistory(history: [.stepOver, .stepIntoTrue, .stepOver, .stepOver])
       
-      let augmentedExecutionHistory = executionHistory.augmented(with: ast).history
+      let augmentedExecutionHistory = try executionHistory.augmented(with: ast).history
       XCTAssertEqual(augmentedExecutionHistory.count, 4)
       XCTAssertEqual(augmentedExecutionHistory[0].command, .stepOver)
       XCTAssertEqual(augmentedExecutionHistory[0].stmt.range.sourceCode(in: source), "int x = 5")

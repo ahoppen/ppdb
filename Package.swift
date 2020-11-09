@@ -9,10 +9,12 @@ let package = Package(
   // MARK: - Products
   
   products: [
+    .executable(name: "ppdb", targets: ["DebuggerConsole"]),
     .library(name: "libppdb", targets: ["AST"]),
   ],
   
   dependencies: [
+    .package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.1"),
   ],
   
   // MARK: - Targets
@@ -34,6 +36,13 @@ let package = Package(
         "TypeChecker",
         "WPInference",
         "Utils",
+      ]
+    ),
+    .target(
+      name: "DebuggerConsole",
+      dependencies: [
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        "Debugger"
       ]
     ),
     .target(

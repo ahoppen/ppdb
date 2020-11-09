@@ -50,7 +50,7 @@ class DebuggerTests: XCTestCase {
 
       debugger.stepOver()
 
-      XCTAssertEqual(debugger.sampledVariableValues[varX]![.integer(2)]!, 1, accuracy: 0.1)
+      XCTAssertEqual(debugger.sampledVariableValues[varX]![.integer(2)]!, 1, accuracy: 0.2)
       XCTAssertEqual(debugger.variableValuesUsingWP, [
         varX: [.integer(2): 1...1]
       ])

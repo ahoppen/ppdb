@@ -359,7 +359,7 @@ internal extension Term {
       return .number(0)
     } else if list.entries.count == 1 {
       let entry = list.entries.first!
-      var factors: [Term] = []
+      var factors: [Term] = [entry.term]
       if entry.factor != 1 {
         factors.append(.number(entry.factor))
       }

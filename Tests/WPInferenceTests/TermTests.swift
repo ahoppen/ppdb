@@ -96,4 +96,10 @@ class TermTests: XCTestCase {
   func testZeroDividedByZeroIsZero() {
     XCTAssertEqual(Term.number(0) / Term.number(0), Term.number(0))
   }
+  
+  func testAdditionOfVariableWithZero() {
+    let queryVar = SourceVariable(name: "$query", disambiguationIndex: 1, type: .int)
+    let term = Term.variable(queryVar)
+    XCTAssertEqual(term + Term.number(0), term)
+  }
 }

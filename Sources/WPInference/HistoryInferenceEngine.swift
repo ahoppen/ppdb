@@ -6,6 +6,10 @@ public enum HistoryInferenceEngine {
     return infer(history: history.augmented(with: ast), loopIterationBounds: loopIterationBounds, previousResult: .initial(f: f))
   }
   
+  public static func infer(history: AugmentedExecutionHistory, loopIterationBounds: LoopIterationBounds, f: Term) -> InferenceResult {
+    return infer(history: history, loopIterationBounds: loopIterationBounds, previousResult: .initial(f: f))
+  }
+  
   private static func infer(history: AugmentedExecutionHistory, loopIterationBounds: LoopIterationBounds, previousResult: InferenceResult) -> InferenceResult {
     var intermediateResult = previousResult
     for (debuggerCommand, stmt) in history.history.reversed() {

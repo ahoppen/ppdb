@@ -25,6 +25,18 @@ let package = Package(
       ]
     ),
     .target(
+      name: "Debugger",
+      dependencies: [
+        "AST",
+        "Execution",
+        "ExecutionHistory",
+        "Parser",
+        "TypeChecker",
+        "WPInference",
+        "Utils",
+      ]
+    ),
+    .target(
       name: "Execution",
       dependencies: [
         "AST",
@@ -74,6 +86,15 @@ let package = Package(
       name: "ASTTests",
       dependencies: [
         "AST",
+        "TestUtils",
+      ]
+    ),
+    .testTarget(
+      name: "DebuggerTests",
+      dependencies: [
+        "AST",
+        "Debugger",
+        "ExecutionHistory",
         "TestUtils",
       ]
     ),

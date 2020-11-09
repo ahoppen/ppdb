@@ -5,16 +5,16 @@ import WPInference
 
 import XCTest
 
-fileprivate func XCTAssertEqualInferenceResult(_ lhs: InferenceResult, wpf: Double, wp1: Double, wlp1: Double, wlp0: Double, accuracy: Double = 0.00000001) {
+fileprivate func XCTAssertEqualInferenceResult(_ lhs: InferenceResult, wpf: Double, woip1: Double, wlp1: Double, wlp0: Double, accuracy: Double = 0.00000001) {
   if case .number(let value) = lhs.wpf {
     XCTAssertEqual(value, wpf, accuracy: accuracy)
   } else {
     XCTFail("wpf component is not a number but \(lhs.wpf)")
   }
-  if case .number(let value) = lhs.wp1 {
-    XCTAssertEqual(value, wp1, accuracy: accuracy)
+  if case .number(let value) = lhs.woip1 {
+    XCTAssertEqual(value, woip1, accuracy: accuracy)
   } else {
-    XCTFail("wp1 component is not a number but \(lhs.wp1)")
+    XCTFail("woip1 component is not a number but \(lhs.woip1)")
   }
   if case .number(let value) = lhs.wlp1 {
     XCTAssertEqual(value, wlp1, accuracy: accuracy)
@@ -61,7 +61,7 @@ class HistoryInferenceEngineTests: XCTestCase {
       XCTAssertEqualInferenceResult(
         HistoryInferenceEngine.infer(history: [.stepOver], loopIterationBounds: [:], ast: ast, f: .probability(of: varX, being: .number(5))),
         wpf: 1,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -73,7 +73,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(7))
         ),
         wpf: 0,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -85,7 +85,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(10))
         ),
         wpf: 0,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -98,7 +98,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(5))
         ),
         wpf: 0,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -110,7 +110,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(7))
         ),
         wpf: 1,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -122,7 +122,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(10))
         ),
         wpf: 0,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -135,7 +135,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(5))
         ),
         wpf: 0,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -147,7 +147,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(7))
         ),
         wpf: 0,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -159,7 +159,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(10))
         ),
         wpf: 1,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -186,7 +186,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(16))
         ),
         wpf: 0.5,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -198,7 +198,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(6))
         ),
         wpf: 0.5,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -210,7 +210,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(6))
         ),
         wpf: 0.5,
-        wp1: 0.5,
+        woip1: 1,
         wlp1: 0.5,
         wlp0: 0
       )
@@ -222,7 +222,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(16))
         ),
         wpf: 0.5,
-        wp1: 0.5,
+        woip1: 1,
         wlp1: 0.5,
         wlp0: 0
       )
@@ -249,7 +249,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(5))
         ),
         wpf: 1,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -261,7 +261,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(5))
         ),
         wpf: 1,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -273,7 +273,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(4))
         ),
         wpf: 1,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -285,7 +285,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(3))
         ),
         wpf: 1,
-        wp1: 1,
+        woip1: 1,
         wlp1: 1,
         wlp0: 0
       )
@@ -297,7 +297,7 @@ class HistoryInferenceEngineTests: XCTestCase {
           f: .probability(of: varX, being: .number(3))
         ),
         wpf: 0,
-        wp1: 0,
+        woip1: 1,
         wlp1: 0,
         wlp0: 0
       )

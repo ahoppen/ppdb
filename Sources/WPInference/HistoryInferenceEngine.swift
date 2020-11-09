@@ -14,30 +14,56 @@ public enum HistoryInferenceEngine {
         intermediateResult = InferenceEngine.infer(stmt: stmt, loopIterationBounds: loopIterationBounds, previousResult: intermediateResult)
         
       case (.stepIntoTrue, let stmt as IfStmt):
-        intermediateResult = intermediateResult.transformAllComponents(transformation: {
+        intermediateResult = intermediateResult.transform(wpTransformation: {
+          return Term.iverson(stmt.condition.term) * $0
+        },
+        woipTransformation: {
+          return $0
+        }, wlpTransformation: {
           return Term.iverson(stmt.condition.term) * $0
         })
       case (.stepIntoTrue, let stmt as ProbStmt):
-        intermediateResult = intermediateResult.transformAllComponents(transformation: {
+        intermediateResult = intermediateResult.transform(wpTransformation: {
+          return stmt.condition.term * $0
+        }, woipTransformation: {
+          return $0
+        }, wlpTransformation: {
           return stmt.condition.term * $0
         })
       case (.stepIntoTrue, let stmt as WhileStmt):
-        intermediateResult = intermediateResult.transformAllComponents(transformation: {
+        intermediateResult = intermediateResult.transform(wpTransformation: {
+          return Term.iverson(stmt.condition.term) * $0
+        },
+        woipTransformation: {
+          return $0
+        }, wlpTransformation: {
           return Term.iverson(stmt.condition.term) * $0
         })
       case (.stepIntoTrue, _):
         intermediateResult = InferenceEngine.infer(stmt: stmt, loopIterationBounds: loopIterationBounds, previousResult: intermediateResult)
         
       case (.stepIntoFalse, let stmt as IfStmt):
-        intermediateResult = intermediateResult.transformAllComponents(transformation: {
+        intermediateResult = intermediateResult.transform(wpTransformation: {
+          return Term.iverson(Term.not(stmt.condition.term)) * $0
+        }, woipTransformation: {
+          return $0
+        }, wlpTransformation: {
           return Term.iverson(Term.not(stmt.condition.term)) * $0
         })
       case (.stepIntoFalse, let stmt as ProbStmt):
-        intermediateResult = intermediateResult.transformAllComponents(transformation: {
+        intermediateResult = intermediateResult.transform(wpTransformation: {
+          return (.number(1) - stmt.condition.term) * $0
+        }, woipTransformation: {
+          return $0
+        }, wlpTransformation: {
           return (.number(1) - stmt.condition.term) * $0
         })
       case (.stepIntoFalse, let stmt as WhileStmt):
-        intermediateResult = intermediateResult.transformAllComponents(transformation: {
+        intermediateResult = intermediateResult.transform(wpTransformation: {
+          return Term.iverson(Term.not(stmt.condition.term)) * $0
+        }, woipTransformation: {
+          return $0
+        }, wlpTransformation: {
           return Term.iverson(Term.not(stmt.condition.term)) * $0
         })
       case (.stepIntoFalse, _):

@@ -12,10 +12,10 @@ fileprivate func XCTAssertEqualInferenceResult(_ lhs: InferenceResult, wpf: Doub
   } else {
     XCTFail("wpf component is not a number but \(lhs.wpf)")
   }
-  if case .number(let value) = lhs.wp1 {
+  if case .number(let value) = lhs.woip1 {
     XCTAssertEqual(value, wp1, accuracy: accuracy)
   } else {
-    XCTFail("wp1 component is not a number but \(lhs.wp1)")
+    XCTFail("woip1 component is not a number but \(lhs.woip1)")
   }
   if case .number(let value) = lhs.wlp1 {
     XCTAssertEqual(value, wlp1, accuracy: accuracy)

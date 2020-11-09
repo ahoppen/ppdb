@@ -17,7 +17,11 @@ public enum InferenceEngine {
         $0.replacing(variable: stmt.variable.resolved!, with: stmt.expr.term) ?? $0
       })
     case let stmt as ObserveStmt:
-      return previousResult.transformAllComponents(transformation: {
+      return previousResult.transform(wpTransformation: {
+        return Term.iverson(stmt.condition.term) * $0
+      }, woipTransformation: {
+        return $0
+      }, wlpTransformation: {
         return Term.iverson(stmt.condition.term) * $0
       })
     case let codeBlock as CodeBlockStmt:
@@ -68,7 +72,10 @@ public enum InferenceEngine {
       }
       var intermediateResult = previousResult.transform(wpTransformation: {
         Term.iverson(Term.not(stmt.condition.term)) * $0
-      }, wlpTransformation: {
+      }, woipTransformation: {
+        Term.iverson(Term.not(stmt.condition.term)) * $0
+      },
+      wlpTransformation: {
         Term.iverson(stmt.condition.term) + Term.iverson(Term.not(stmt.condition.term)) * $0
       })
       let condition = stmt.condition.term

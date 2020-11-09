@@ -94,9 +94,3 @@ public enum InferenceEngine {
     }
   }
 }
-
-extension InferenceEngine {
-  public static func inferProbability(of variable: SourceVariable, being value: Term, loopIterationBounds: LoopIterationBounds, stmt: Stmt) -> InferenceResult {
-    return infer(stmt: stmt, loopIterationBounds: loopIterationBounds, f: .iverson(.equal(lhs: .variable(variable), rhs: value)))
-  }
-}

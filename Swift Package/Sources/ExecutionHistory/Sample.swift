@@ -1,7 +1,7 @@
 import AST
 
 /// A single sample during probabilistic execution of a program
-public struct Sample {
+public struct Sample: Equatable {
   /// The variables and their values.
   public let values: [SourceVariable: VariableValue]
   

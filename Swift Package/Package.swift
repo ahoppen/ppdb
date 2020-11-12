@@ -10,7 +10,7 @@ let package = Package(
   
   products: [
     .executable(name: "ppdb", targets: ["DebuggerConsole"]),
-    .library(name: "libppdb", targets: ["AST"]),
+    .library(name: "libppdb", targets: ["AST", "Execution", "ExecutionHistory", "Parser", "TypeChecker", "WPInference"]),
   ],
   
   dependencies: [

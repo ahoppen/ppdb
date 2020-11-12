@@ -17,7 +17,7 @@ public enum DebuggerCommand: CustomStringConvertible {
   }
 }
 
-public struct ExecutionHistory: ExpressibleByArrayLiteral, CustomStringConvertible {
+public struct ExecutionHistory: Equatable, ExpressibleByArrayLiteral, CustomStringConvertible {
   enum Error: Swift.Error {
     case invalidExecutionHistory
   }

@@ -1,6 +1,6 @@
 /// A variable in the source code.
 /// Until variable resolving, variable references only have a name and use the `UnresolvedVariable` type.
-public struct SourceVariable: Hashable, CustomDebugStringConvertible, CustomStringConvertible {
+public struct SourceVariable: Hashable, CustomDebugStringConvertible, CustomStringConvertible, Comparable {
   /// The name of the variable, as it is named in the source code
   public let name: String
   
@@ -22,6 +22,14 @@ public struct SourceVariable: Hashable, CustomDebugStringConvertible, CustomStri
   
   public var debugDescription: String {
     return "\(name) (\(type))"
+  }
+  
+  public static func <(lhs: SourceVariable, rhs: SourceVariable) -> Bool {
+    if lhs.name == rhs.name {
+      return lhs.disambiguationIndex < rhs.disambiguationIndex
+    } else {
+      return lhs.name < rhs.name
+    }
   }
 }
 

@@ -1,20 +1,23 @@
 import AST
 import Utils
 
-public struct ExecutionOutlineNode {
-  public enum Label {
+public struct ExecutionOutlineNode: Equatable {
+  public enum Label: Equatable {
     case sourceCode(SourceRange)
     case branch(Bool)
     case iteration(Int)
+    case end
     
     public func description(sourceCode: String) -> String {
       switch self {
       case .sourceCode(let range):
-        return String(sourceCode.split(separator: "\n")[range.lowerBound.line - 1]).trimmingCharacters(in: .whitespaces)
+        return String(sourceCode.split(separator: "\n", omittingEmptySubsequences: false)[range.lowerBound.line - 1]).trimmingCharacters(in: .whitespaces)
       case .branch(let branch):
         return "\(branch)-Branch"
       case .iteration(let iteration):
         return "Iteration \(iteration)"
+      case .end:
+        return "End"
       }
     }
   }

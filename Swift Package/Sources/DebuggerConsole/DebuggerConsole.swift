@@ -9,16 +9,6 @@ extension Array where Element: Hashable {
     }
 }
 
-extension SourceVariable: Comparable {
-  public static func <(lhs: SourceVariable, rhs: SourceVariable) -> Bool {
-    if lhs.name == rhs.name {
-      return lhs.disambiguationIndex < rhs.disambiguationIndex
-    } else {
-      return lhs.name < rhs.name
-    }
-  }
-}
-
 extension VariableValue: Comparable {
   public static func < (lhs: VariableValue, rhs: VariableValue) -> Bool {
     let lhsValue: Double

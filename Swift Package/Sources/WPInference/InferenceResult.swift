@@ -41,4 +41,12 @@ public struct InferenceResult: Equatable {
       wlp0: wlpTransformation(wlp0)
     )
   }
+  
+  public var lowerBound: Term {
+    return (wpf / wlp1)
+  }
+  
+  public var upperBound: Term {
+    return  ((wpf + .number(1) - woip1) ./. (wlp1 - wlp0))
+  }
 }

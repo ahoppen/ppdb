@@ -35,6 +35,7 @@ public enum Executor {
   
   private static func executeMultipleStmts(
     stmts: [Stmt],
+    enclosingStmt: Stmt,
     samples: [Sample],
     executionHistory: ExecutionHistory
   ) -> (
@@ -55,6 +56,13 @@ public enum Executor {
       executionOutline += executionResult.executionOutline
       executionHistory = executionHistory.appending(.stepOver)
     }
+    executionOutline += ExecutionOutlineNode(
+      children: [],
+      position: enclosingStmt.range.upperBound,
+      label: .end,
+      executionHistory: executionHistory,
+      samples: newSamples
+    )
     return (
       samples: newSamples,
       loopIterationBounds:loopIterationBounds,
@@ -152,9 +160,9 @@ public enum Executor {
         }
       }
     case let stmt as CodeBlockStmt:
-      return executeMultipleStmts(stmts: stmt.body, samples: samples, executionHistory: executionHistory)
+      return executeMultipleStmts(stmts: stmt.body, enclosingStmt: stmt, samples: samples, executionHistory: executionHistory)
     case let stmt as TopLevelCodeStmt:
-      return executeMultipleStmts(stmts: stmt.stmts, samples: samples, executionHistory: executionHistory)
+      return executeMultipleStmts(stmts: stmt.stmts, enclosingStmt: stmt, samples: samples, executionHistory: executionHistory)
     case let stmt as IfStmt:
       return executeIfStmt(ifStmt: stmt, ifBody: stmt.ifBody, elseBody: stmt.elseBody, samples: samples, executionHistory: executionHistory) { (sample) -> Bool in
         return sample.evaluate(expr: stmt.condition).bool!
@@ -197,10 +205,19 @@ public enum Executor {
         executionHistory = executionHistory.appending(Array(repeating: DebuggerCommand.stepOver, count: stmt.body.body.count))
       } while !liveSamples.isEmpty
       loopIterationBounds = loopIterationBounds.setting(loopId: stmt.loopId, to: iterations)
+      
+      let outlineNode = ExecutionOutlineNode(
+        children: iterationExecutionOutlineNodes,
+        position: stmt.range.lowerBound,
+        label: .sourceCode(stmt.range),
+        executionHistory: executionHistory,
+        samples: samples
+      )
+      
       return (
         samples: deadSamples,
         loopIterationBounds: loopIterationBounds,
-        executionOutline: iterationExecutionOutlineNodes
+        executionOutline: [outlineNode]
       )
     default:
       fatalError("Unknown Stmt type")

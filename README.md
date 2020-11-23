@@ -2,6 +2,19 @@
 
 `ppdb` is a proof-of-concept implementation of a debugger for probabilistic programs.
 
+## Running pre-built binaries
+
+### macOS
+
+Download the latest version of the debugger's GUI or command line interface from the project's [Releases](https://github.com/ahoppen/ppdb/releases) page and run it.
+
+Sample programs to debug can be found in the [Samples](https://github.com/ahoppen/ppdb/tree/master/Samples) folder
+
+### Linux
+
+1. Install Swift on your machine as described on [swift.org](https://swift.org/getting-started/#installing-swift)
+2. Download the latest command line executable from the project's  [Releases](https://github.com/ahoppen/ppdb/releases) page and execute it.
+
 ## Build instructions
 
 ### Mac-GUI

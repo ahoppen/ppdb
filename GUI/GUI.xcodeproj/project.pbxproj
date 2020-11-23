@@ -151,7 +151,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1210;
-				LastUpgradeCheck = 1210;
+				LastUpgradeCheck = 1220;
 				TargetAttributes = {
 					FA7CC67E255407A000357A32 = {
 						CreatedOnToolsVersion = 12.1;
@@ -348,6 +348,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"GUI/Preview Content\"";
 				DEVELOPMENT_TEAM = B6NTM9MACU;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = GUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -372,6 +373,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"GUI/Preview Content\"";
 				DEVELOPMENT_TEAM = B6NTM9MACU;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = GUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

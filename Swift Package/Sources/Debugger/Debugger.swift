@@ -41,7 +41,8 @@ public class Debugger {
   }
   
   public var sourceLocation: SourceLocation? {
-    return self.augmentedExecutionHistory?.history.last?.stmt.range.lowerBound
+    // The next instruction to be executed is retrieved by assuming that we step over the last instruction
+    return try? self.executionHistory.appending([.stepOver]).augmented(with: ast).history.last?.stmt.range.lowerBound
   }
   
   public var samples: [Sample] {
